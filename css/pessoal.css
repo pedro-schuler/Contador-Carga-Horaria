@@ -1,0 +1,32 @@
+body {
+  background-color: #428bca;
+}
+
+.escondido {
+  display: none;
+}
+
+.container {
+  background-color: #fff;
+}
+
+.smallinput {
+  width: 30px;
+}
+
+.espacamentoMaiorDireita {
+  text-align: right;
+  line-height: 190%;
+}
+
+.alinharEsquerda {
+  text-align: left;
+}
+
+#paginaConfiguracoes {
+  text-align: center;
+}
+
+table, th, td {
+  text-align: center;
+}
