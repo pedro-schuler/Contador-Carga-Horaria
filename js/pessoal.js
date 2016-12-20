@@ -19,6 +19,8 @@ $( document ).ready(function() {
     numeroTurnos: 3,
     numeroOperadoresPorTurno: 5,
     digitosLegendas: 1,
+    cargaHorariaDiurna: 7.25,
+    cargaHorariaNoturna: 10.25
   };
 
   /*************************************
@@ -173,15 +175,13 @@ $( document ).ready(function() {
   /*************************************
   Essa função calcula as horas de apenas 1 operador
   e recebe como argumento a legenda do operador envolta em apóstrofos
-  Ex: cargaHoraria("X");
+  Ex: cargaHoraria("X");, a variável cargaHoráriaDiurna e a variável
+  cargaHoráriaNoturna
 
   Para calcular todas as legendas é necessário passar todos os operadores
   como argumento para a função.
   *************************************/
   function cargaHoraria(legendaOperador){
-
-    var cargaHorariaManhaTarde = 7.25;
-    var cargaHorariaNoite = 10.25;
 
     /**********************************************
     ***********************************************
@@ -206,10 +206,10 @@ $( document ).ready(function() {
 
             if ( valorCelula == legendaOperador){
               if (j == 1 || j == 2){
-                operador[legendaOperador].cargaHoraria += cargaHorariaManhaTarde;
+                operador[legendaOperador].cargaHoraria += configuracao.cargaHorariaDiurna;
               }
               if (j == 3){
-                operador[legendaOperador].cargaHoraria += cargaHorariaNoite;
+                operador[legendaOperador].cargaHoraria += configuracao.cargaHorariaNoturna;
               }
             }
 
@@ -406,16 +406,22 @@ $( document ).ready(function() {
     var numeroTurnos = $( '#inputNumeroTurnos' ).val();
     var numeroOperadoresPorTurno = $( '#inputNumeroOperadoresPorTurno' ).val();
     var digitosLegendas = $( '#inputDigitosLegendas' ).val();
+    var cargaHorariaDiurna = $( '#inputCargaHorariaDiurna' ).val();
+    var cargaHorariaNoturna = $( '#inputCargaHorariaNoturna' ).val();
 
     numeroDias = parseInt(numeroDias, 10);
     numeroTurnos = parseInt(numeroTurnos, 10);
     numeroOperadoresPorTurno = parseInt(numeroOperadoresPorTurno, 10);
     digitosLegendas = parseInt(digitosLegendas, 10);
+    cargaHorariaDiurna = parseFloat(cargaHorariaDiurna);
+    cargaHorariaNoturna = parseFloat(cargaHorariaNoturna);
 
     configuracao.numeroDias = numeroDias;
     configuracao.numeroTurnos = numeroTurnos;
     configuracao.numeroOperadoresPorTurno = numeroOperadoresPorTurno;
     configuracao.digitosLegendas = digitosLegendas;
+    configuracao.cargaHorariaDiurna = cargaHorariaDiurna;
+    configuracao.cargaHorariaNoturna = cargaHorariaNoturna;
 
     criarOperadores();
 
@@ -457,7 +463,12 @@ $( document ).ready(function() {
 
     criarArrayTabelaDias();
 
-    var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " + encodeURIComponent(JSON.stringify(arrayTabelaDias)) + ";";
+    var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " +
+                encodeURIComponent(JSON.stringify(arrayTabelaDias)) +
+                "; configuracaoSalvo = " +
+                encodeURIComponent(JSON.stringify(configuracao)) +
+                "; legendasOperadoresSalvo = " +
+                encodeURIComponent(JSON.stringify(legendasOperadores)) + ";";
 
     $( "#botaoSalvarValores" ).removeClass("btn btn-success");
     $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
@@ -467,7 +478,25 @@ $( document ).ready(function() {
   $( '#botaoCarregarValores' ).on( "click", function(){
 
     arrayTabelaDias = arrayTabelaDiasSalvo;
+    configuracao = configuracaoSalvo;
+    legendasOperadores = legendasOperadoresSalvo;
+
+    alert("Cuidado ao utilizar essa função. Tenha certeza que os valores" +
+          " configurados são os que você espera.")
+
+    criarOperadores();
+
+    criarTabelaDias(configuracao.numeroDias,
+                    configuracao.numeroTurnos,
+                    configuracao.numeroOperadoresPorTurno,
+                    configuracao.digitosLegendas);
+
+    criarTabelaResultados();
+
     preencheTabelaOperadores();
+
+    $( '#divTabelaCargaHoraria' ).show();
+    $( '#paginaConfiguracoes' ).hide();
 
   });
 
