@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Contagem da Carga Horária</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/pessoal.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Contagem Básica de Carga Horária</h1>
+    </div>
+
+    <br>
+
+    <div id="paginaConfiguracoes">
+
+      <div class="row">
+
+        <p class="lead">
+          É permitido utilizar letras e números na escolha das legendas
+          dos operadores.<br>
+          As legendas devem ser inseridas separadas por vírgula e envoltas
+          em aspas.<br>
+          Ex: "A1","A2","A3","A4"...
+        </p><br>
+
+        <div class="col-xs-6 espacamentoMaiorDireita">
+          <p>
+            <strong>Legendas dos operadores:</strong>
+          </p>
+        </div>
+
+        <div class="col-xs-6 alinharEsquerda">
+          <p>
+            <textarea cols="40" rows="4" id="inputLegendaOperadores">"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T"</textarea>
+          </p>
+        </div>
+      </div>
+
+      <br>
+
+      <p class="lead">
+        Utilize apenas números para preencher o formulário. <br>
+        Caso não saiba qual valor utilizar, os valores padrão devem ser
+        seguros o suficiente.
+      </p><br>
+
+      <div class="row">
+
+        <div class="col-xs-6 espacamentoMaiorDireita">
+
+          <p>
+            <strong>Número de Dias no Mês:</strong>
+          </p>
+          <p>
+            <strong>Número de operadores por turno:</strong>
+          </p>
+          <p>
+            <strong>Quantidade de Turnos por Dia:</strong>
+          </p>
+          <p>
+            <strong>Quantidade de dígitos na legenda</strong> (Ex: A = 1; A2 = 2)<strong>:</strong>
+          </p>
+
+        </div>
+
+        <div class="col-xs-6 alinharEsquerda">
+
+          <p>
+            <input type='text' maxlength='2' value=31 id='inputNumeroDias'>
+          </p>
+          <p>
+            <input type='text' maxlength='2' value=5 id='inputNumeroOperadoresPorTurno'>
+          </p>
+          <p>
+            <input type='text' maxlength='1' value=3 id='inputNumeroTurnos'>
+          </p>
+          <p>
+            <input type='text' maxlength='3' value=1 id='inputDigitosLegendas'>
+          </p>
+
+        </div>
+
+      </div>
+
+      <br>
+
+      <button type="button" name="configurarAmbiente" class="btn btn-primary"
+      id="botaoConfigurarAmbiente">Configurar</button>
+
+    </div>
+
+    <br>
+
+    <div class="escondido" id="divTabelaCargaHoraria">
+      <table class="table table-striped table-hover table-condensed"
+                id="tabelaCargaHoraria">
+        <tr>
+          <th>Dias</th>
+          <th>Manhã</th>
+          <th>Tarde</th>
+          <th>Noite</th>
+        </tr>
+      </table>
+
+      <br>
+
+      <button type="button" name="calculaCarga" class="btn btn-primary"
+      id="botaoCalcular">Calcular!</button>
+
+      <a class="btn btn-success" id="botaoSalvarValores">Salvar Valores</a>
+
+      <button type="button" name="carregaValores" class="btn btn-danger"
+      id="botaoCarregarValores">Carregar Valores</button>
+
+    </div>
+
+    <br>
+
+    <div class="escondido" id="divCargaOperadores">
+      <table class="table table-striped table-hover table-condensed"
+                id="tabelaCargaOperadores">
+        <tr>
+          <th>Operador</th>
+          <th>Carga Horária</th>
+          <th>Etapas Comuns</th>
+          <th>Etapas Eventuais</th>
+        </tr>
+      </table>
+
+      <br>
+
+      <button type="button" name="mostraTabela" class="btn btn-primary"
+      id="botaoMostrarTabela">Mostrar Tabela</button>
+
+    </div>
+  </div>
+
+<script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/pessoal.js" charset="utf-8"></script>
+<script type="text/javascript" src="dados.json" charset="utf-8"></script>
+</body>
+</html>
