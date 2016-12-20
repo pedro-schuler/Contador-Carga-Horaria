@@ -2,6 +2,10 @@ body {
   background-color: #428bca;
 }
 
+.jumbotron {
+  text-align: center;
+}
+
 .escondido {
   display: none;
 }
@@ -14,13 +18,27 @@ body {
   width: 30px;
 }
 
-.espacamentoMaiorDireita {
-  text-align: right;
-  line-height: 190%;
+.formConfiguracao{
+  display: table;
+  width: 600px;
+  margin: 0 auto;
 }
 
-.alinharEsquerda {
-  text-align: left;
+.formConfiguracao label{
+  display: table-cell;
+  text-align: right;
+}
+
+.formConfiguracao p{
+  display: table-row;
+}
+
+.formConfiguracao input{
+  display: table-cell;
+}
+
+.formConfiguracao textarea{
+  display: table-cell;
 }
 
 #paginaConfiguracoes {
