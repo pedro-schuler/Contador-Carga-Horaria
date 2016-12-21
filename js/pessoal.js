@@ -55,11 +55,11 @@ $( document ).ready(function() {
   Essa função cria a tabela que será utilizada para exibir os dados
   na segunda página da aplicação.
   *************************************/
-  function criarTabelaResultados(){
+  function criarTabelaResultados(arrayOperadores){
 
     aux = $("#tabelaCargaOperadores");
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
       aux.append("<tr>"+
                 "<td>" + legendaOperador + "</td>"+
@@ -105,9 +105,9 @@ $( document ).ready(function() {
   operador["X"].etapasEventuais
 
    ************************************/
-  function criarOperadores(){
+  function criarOperadores(arrayOperadores){
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
       operador[legendaOperador] = new objetoOperador(0,[],[]);
 
@@ -115,15 +115,15 @@ $( document ).ready(function() {
 
   }
 
-  criarOperadores();
+  criarOperadores(legendasOperadores);
 
   /*************************************
   Essa função zera todos os operadores para evitar que os valores continuem
   sendo somados caso os cálculos sejam efetuados novamente.
   *************************************/
-  function zerarOperadores(){
+  function zerarOperadores(arrayOperadores){
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
       operador[legendaOperador].cargaHoraria = 0;
       operador[legendaOperador].etapasComuns = [];
@@ -143,17 +143,17 @@ $( document ).ready(function() {
        j = número do turno (1->configuracao.numeroTurnos)
        k = posição do operador (1->configuracao.numeroOperadoresPorTurno)
   *************************************/
-  function criarArrayTabelaDias(){
+  function criarArrayTabelaDias(arrayOperadores, n_dias, n_turnos, n_operadores){
 
-    for (var i = 1; i <= configuracao.numeroDias; i++) {
+    for (var i = 1; i <= n_dias; i++) {
       arrayTabelaDias[i] = [];
-      for (var j = 1; j <= configuracao.numeroTurnos; j++) {
+      for (var j = 1; j <= n_turnos; j++) {
         arrayTabelaDias[i][j] = [];
-        for (var k = 1; k <= configuracao.numeroOperadoresPorTurno; k++) {
+        for (var k = 1; k <= n_operadores; k++) {
 
           valorCelula = $( "#" + i + "-" + j + k ).val();
 
-          indiceValorCelula = legendasOperadores.indexOf(valorCelula);
+          indiceValorCelula = arrayOperadores.indexOf(valorCelula);
 
           if (indiceValorCelula == -1){
             if (valorCelula == ""){
@@ -181,55 +181,30 @@ $( document ).ready(function() {
   Para calcular todas as legendas é necessário passar todos os operadores
   como argumento para a função.
   *************************************/
-  function cargaHoraria(legendaOperador){
+  function cargaHoraria(legendaOperador, cargaDiurna, cargaNoturna){
 
-    /**********************************************
-    ***********************************************
-    **                                           **
-    **  i = dia                                  **
-    **  j = turno                                **
-    **  k = posição do operador dentro do turno  **
-    **                                           **
-    ***********************************************
-    **********************************************/
+    var CargaHoraria = 0;
 
-    for (var i = 1; i <= configuracao.numeroDias; i++) {
-      for (var j = 1; j <= configuracao.numeroTurnos; j++) {
-        for (var k = 1; k <= configuracao.numeroOperadoresPorTurno; k++) {
+    CargaHoraria = operador[legendaOperador].etapasComuns.length * cargaDiurna;
+    CargaHoraria += operador[legendaOperador].etapasEventuais.length * cargaNoturna;
 
-          valorCelula = arrayTabelaDias[i][j][k];
-
-          if (valorCelula == ""){
-            continue;
-          }
-          else {
-
-            if ( valorCelula == legendaOperador){
-              if (j == 1 || j == 2){
-                operador[legendaOperador].cargaHoraria += configuracao.cargaHorariaDiurna;
-              }
-              if (j == 3){
-                operador[legendaOperador].cargaHoraria += configuracao.cargaHorariaNoturna;
-              }
-            }
-
-          }
-
-        }
-      }
-    }
-
+    operador[legendaOperador].cargaHoraria = CargaHoraria;
   }
 
   /*************************************
   Essa função calcula as cargas horárias de TODOS os operadores que estiverem
   listados na variável legendasOperadores.
+  É necessário que essa função seja chamada ANTES da função removerEtapasComuns,
+  do contrário o cálculo de carga horária estará incorreto.
+  Também é necessário que essa função seja chamada APÓS a função
+  calcularEtapasTodos, do contrário as propriedades operador["X"].etapasComuns e
+  operador["X"].etapasEventuais não estarão setados.
   *************************************/
-  function calcularCargasHorarias(){
+  function calcularCargasHorarias(arrayOperadores, cargaDiurna, cargaNoturna){
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
-      cargaHoraria(legendaOperador);
+      cargaHoraria(legendaOperador, cargaDiurna, cargaNoturna);
 
     });
 
@@ -244,7 +219,7 @@ $( document ).ready(function() {
   Para calcular todas as legendas é necessário passar todos os operadores
   como argumento para a função.
   *************************************/
-  function diasEtapas(legendaOperador){
+  function diasEtapas(legendaOperador, n_dias, n_turnos, n_operadores){
 
     /**********************************************
     ***********************************************
@@ -256,9 +231,9 @@ $( document ).ready(function() {
     ***********************************************
     **********************************************/
 
-    for (var i = 1; i <= configuracao.numeroDias; i++) {
-      for (var j = 1; j <= configuracao.numeroTurnos; j++) {
-        for (var k = 1; k <= configuracao.numeroOperadoresPorTurno; k++) {
+    for (var i = 1; i <= n_dias; i++) {
+      for (var j = 1; j <= n_turnos; j++) {
+        for (var k = 1; k <= n_operadores; k++) {
 
           valorCelula = arrayTabelaDias[i][j][k];
 
@@ -292,9 +267,9 @@ $( document ).ready(function() {
   Essa função remove as etapas comuns de todos os operadores caso seja
   verificado que o mesmo já receberá uma etapa eventual no mesmo dia
   *************************************/
-  function removerEtapasComuns(){
+  function removerEtapasComuns(arrayOperadores){
 
-  	legendasOperadores.forEach( function(legendaOperador){
+  	arrayOperadores.forEach( function(legendaOperador){
 
   		var indiceRemover = -1;
   		var removida = [];
@@ -324,11 +299,11 @@ $( document ).ready(function() {
   que estiverem listados na variável legendasOperadores às respectivas
   propriedades do objeto Operador.
   *************************************/
-  function calcularEtapasTodos(){
+  function calcularEtapasTodos(arrayOperadores, n_dias, n_turnos, n_operadores){
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
-      diasEtapas(legendaOperador);
+      diasEtapas(legendaOperador, n_dias, n_turnos, n_operadores);
 
     });
 
@@ -338,12 +313,12 @@ $( document ).ready(function() {
   Essa função preenche a tabela FINAL com as cargas horárias dos operadores.
   A tabela inicial é feita pelo input dos usuários.
   *************************************/
-  function preencheTabelaResultado(){
+  function preencheTabelaResultado(arrayOperadores){
 
-    legendasOperadores.forEach( function(legendaOperador){
+    arrayOperadores.forEach( function(legendaOperador){
 
-      var fraseEtapasComuns = "(" + operador[legendaOperador].etapasComuns.length + ") ";
-      var fraseEtapasEventuais = "(" + operador[legendaOperador].etapasEventuais.length + ") ";
+      var fraseEtapasComuns = "(" + operador[legendaOperador].etapasComuns.length + ") / ";
+      var fraseEtapasEventuais = "(" + operador[legendaOperador].etapasEventuais.length + ") / ";
 
       for (var i = 0; i < operador[legendaOperador].etapasComuns.length; i++) {
         fraseEtapasComuns += operador[legendaOperador].etapasComuns[i] + ", ";
@@ -423,55 +398,17 @@ $( document ).ready(function() {
     configuracao.cargaHorariaDiurna = cargaHorariaDiurna;
     configuracao.cargaHorariaNoturna = cargaHorariaNoturna;
 
-    criarOperadores();
+    criarOperadores(legendasOperadores);
 
     criarTabelaDias(configuracao.numeroDias,
                     configuracao.numeroTurnos,
                     configuracao.numeroOperadoresPorTurno,
                     configuracao.digitosLegendas);
 
-    criarTabelaResultados();
+    criarTabelaResultados(legendasOperadores);
 
     $( '#divTabelaCargaHoraria' ).show();
     $( '#paginaConfiguracoes' ).hide();
-
-  });
-
-  $( '#botaoCalcular' ).on( "click", function(){
-
-    criarArrayTabelaDias();
-    calcularCargasHorarias();
-    calcularEtapasTodos();
-    removerEtapasComuns();
-    preencheTabelaResultado();
-
-    $( '#divCargaOperadores' ).show();
-    $( '#divTabelaCargaHoraria' ).hide();
-
-  });
-
-  $( '#botaoMostrarTabela' ).on( "click", function(){
-
-    zerarOperadores();
-
-    $( '#divTabelaCargaHoraria' ).show();
-    $( '#divCargaOperadores' ).hide();
-
-  });
-
-  $('#botaoSalvarValores' ).on( "click", function(){
-
-    criarArrayTabelaDias();
-
-    var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " +
-                encodeURIComponent(JSON.stringify(arrayTabelaDias)) +
-                "; configuracaoSalvo = " +
-                encodeURIComponent(JSON.stringify(configuracao)) +
-                "; legendasOperadoresSalvo = " +
-                encodeURIComponent(JSON.stringify(legendasOperadores)) + ";";
-
-    $( "#botaoSalvarValores" ).removeClass("btn btn-success");
-    $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
 
   });
 
@@ -484,19 +421,74 @@ $( document ).ready(function() {
     alert("Cuidado ao utilizar essa função. Tenha certeza que os valores" +
           " configurados são os que você espera.")
 
-    criarOperadores();
+    criarOperadores(legendasOperadores);
 
     criarTabelaDias(configuracao.numeroDias,
                     configuracao.numeroTurnos,
                     configuracao.numeroOperadoresPorTurno,
                     configuracao.digitosLegendas);
 
-    criarTabelaResultados();
+    criarTabelaResultados(legendasOperadores);
 
     preencheTabelaOperadores();
 
     $( '#divTabelaCargaHoraria' ).show();
     $( '#paginaConfiguracoes' ).hide();
+
+  });
+
+  $( '#botaoCalcular' ).on( "click", function(){
+
+    criarArrayTabelaDias(legendasOperadores,
+                          configuracao.numeroDias,
+                          configuracao.numeroTurnos,
+                          configuracao.numeroOperadoresPorTurno);
+
+    zerarOperadores(legendasOperadores);
+
+    calcularEtapasTodos(legendasOperadores,
+                        configuracao.numeroDias,
+                        configuracao.numeroTurnos,
+                        configuracao.numeroOperadoresPorTurno);
+
+    calcularCargasHorarias(legendasOperadores,
+                            configuracao.cargaHorariaDiurna,
+                            configuracao.cargaHorariaNoturna);
+
+    removerEtapasComuns(legendasOperadores);
+
+    preencheTabelaResultado(legendasOperadores);
+
+    $( '#divCargaOperadores' ).show();
+    $( '#divTabelaCargaHoraria' ).hide();
+
+  });
+
+  $( '#botaoMostrarTabela' ).on( "click", function(){
+
+    zerarOperadores(legendasOperadores);
+
+    $( '#divTabelaCargaHoraria' ).show();
+    $( '#divCargaOperadores' ).hide();
+
+  });
+
+  $('#botaoSalvarValores' ).on( "click", function(){
+
+    criarArrayTabelaDias(legendasOperadores,
+                          configuracao.numeroDias,
+                          configuracao.numeroTurnos,
+                          configuracao.numeroOperadoresPorTurno);
+
+    var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " +
+                encodeURIComponent(JSON.stringify(arrayTabelaDias)) +
+                "; configuracaoSalvo = " +
+                encodeURIComponent(JSON.stringify(configuracao)) +
+                "; legendasOperadoresSalvo = " +
+                encodeURIComponent(JSON.stringify(legendasOperadores)) + ";";
+
+    $( "#botaoSalvarValores" ).removeClass("btn btn-success");
+    $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
 
   });
 
