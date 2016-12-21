@@ -1,0 +1,50 @@
+body {
+  background-color: #428bca;
+}
+
+.jumbotron {
+  text-align: center;
+}
+
+.escondido {
+  display: none;
+}
+
+.container {
+  background-color: #fff;
+}
+
+.smallinput {
+  width: 30px;
+}
+
+.formConfiguracao{
+  display: table;
+  width: 600px;
+  margin: 0 auto;
+}
+
+.formConfiguracao label{
+  display: table-cell;
+  text-align: right;
+}
+
+.formConfiguracao p{
+  display: table-row;
+}
+
+.formConfiguracao input{
+  display: table-cell;
+}
+
+.formConfiguracao textarea{
+  display: table-cell;
+}
+
+#paginaConfiguracoes {
+  text-align: center;
+}
+
+table, th, td {
+  text-align: center;
+}
