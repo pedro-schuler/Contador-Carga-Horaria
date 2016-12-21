@@ -37,4 +37,4 @@ Errado: 10,25
 3 - A carga horária computada inclui todos os turnos trabalhados pelo operador, entretanto o cálculo de etapas poderá ser divergente. Como a FAB não paga mais de uma etapa ao dia, será apresentado apenas a etapa eventual (Que possui um valor maior) e a etapa comum será autimaticamente descontada. Não é necessário que o escalante retire manualmente a etapa comum dos dias trabalhados.
 Ex: Caso o operador A trabalhe no dia 1 os turnos manhã e noite, o dia 1 aparecerá apenas nas etapas eventuais e não nas etapas comuns.
 
-4 - A tabela final pode ser compiada diretamente no LibreOffice Calc ou Microsoft Excel utilizando o recurso 'colar especial' (No LibreOffice o atalho é ctrl+shift+v). O formato de exibição é o mesmo utilizado nas planilhas de auxílio-alimentação, não precisando de qualquer intervenção do operador.
+4 - A tabela final pode ser copiada diretamente no LibreOffice Calc ou Microsoft Excel utilizando o recurso 'colar especial' (No LibreOffice o atalho é ctrl+shift+v). O formato de exibição é o mesmo utilizado nas planilhas de auxílio-alimentação, não precisando de qualquer intervenção do operador.
