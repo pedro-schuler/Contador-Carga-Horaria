@@ -1,44 +1,31 @@
 body {
-  background-color: #428bca;
+  padding-top: 70px;
+}
+
+.navbar-inverse {
+  background-color: #1659bf;
+}
+
+.navbar-inverse .navbar-brand {
+  color: #fff;
 }
 
 .jumbotron {
-  text-align: center;
+  background-color: #1659bf;
+  text-align: left;
+  color: #fff;
+}
+
+.jumbotron h1 {
+  font-size: 3em;
 }
 
 .escondido {
   display: none;
 }
 
-.container {
-  background-color: #fff;
-}
-
 .smallinput {
   width: 30px;
-}
-
-.formConfiguracao{
-  display: table;
-  width: 600px;
-  margin: 0 auto;
-}
-
-.formConfiguracao label{
-  display: table-cell;
-  text-align: right;
-}
-
-.formConfiguracao p{
-  display: table-row;
-}
-
-.formConfiguracao input{
-  display: table-cell;
-}
-
-.formConfiguracao textarea{
-  display: table-cell;
 }
 
 #paginaConfiguracoes {

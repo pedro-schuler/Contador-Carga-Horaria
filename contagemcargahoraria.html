@@ -6,41 +6,49 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Contagem da Carga Horária</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
   <link rel="stylesheet" href="css/pessoal.css">
 </head>
+
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Contador de Horas</a>
+    </div>
+  </div>
+</nav>
+  
 <body>
 
   <div class="container">
-    <div class="jumbotron">
-      <h2>Contagem Básica de Carga Horária</h2>
+    <div class="jumbotron" id="call-to-action">
+      <h1><i class="fa fa-clock-o" aria-hidden="true"></i> Contagem Básica de Carga Horária</h1>
     </div>
 
     <br>
 
     <div id="paginaConfiguracoes">
 
-      <div class="row">
+      <p class="lead">
+        É permitido utilizar letras e números na escolha das legendas
+        dos operadores.<br>
+        As legendas devem ser inseridas separadas por vírgula e envoltas
+        em aspas.<br>
+        Ex: "A1","A2","A3","A4"...
+      </p><br>
 
-        <p class="lead">
-          É permitido utilizar letras e números na escolha das legendas
-          dos operadores.<br>
-          As legendas devem ser inseridas separadas por vírgula e envoltas
-          em aspas.<br>
-          Ex: "A1","A2","A3","A4"...
-        </p><br>
+      <form class="form-horizontal">
 
-        <div class="col-xs-12">
+      <div class="form-group">
 
-          <form class="formConfiguracao">
-            <label for="inputLegendaOperadores">
-              Legendas dos Operadores:
-            </label>
-            <textarea cols="40" rows="4" id="inputLegendaOperadores">"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T"</textarea>
-          </form>
-
+        <label for="inputLegendaOperadores" class="col-sm-4 col-sm-offset-2 control-label">Legendas dos Operadores</label>
+        <div class="col-sm-3">
+          <textarea class="form-control" rows="4" id="inputLegendaOperadores">"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T"</textarea>
         </div>
 
       </div>
+
+      </form>
 
       <br>
 
@@ -50,60 +58,64 @@
         seguros o suficiente.
       </p><br>
 
-      <div class="row">
+      <form class="form-horizontal">
 
+        <div class="form-group">
 
-        <div class="col-xs-12">
-
-          <form class="formConfiguracao">
-
-            <p>
-              <label for="inputNumeroDias">
-                Número de Dias no Mês:
-              </label>
-              <input type='text' maxlength='2' value=31 id='inputNumeroDias'>
-            </p>
-
-            <p>
-              <label for="inputNumeroOperadoresPorTurno">
-                Número MÁXIMO de operadores por turno:
-              </label>
-              <input type='text' maxlength='2' value=5 id='inputNumeroOperadoresPorTurno'>
-            </p>
-
-            <p>
-              <label for="inputNumeroTurnos">
-                Quantidade de Turnos por Dia:
-              </label>
-              <input type='text' maxlength='1' value=3 id='inputNumeroTurnos'>
-            </p>
-
-            <p>
-              <label for="inputDigitosLegendas">
-                Quantidade de dígitos na legenda (Ex: A = 1; A2 = 2):
-              </label>
-              <input type='text' maxlength='3' value=1 id='inputDigitosLegendas'>
-            </p>
-
-            <p>
-              <label for="inputCargaHorariaDiurna">
-                Carga Horária Diurna:
-              </label>
-              <input type="text" maxlength=6 value='7.25' id='inputCargaHorariaDiurna'>
-            </p>
-
-            <p>
-              <label for="inputCargaHorariaNoturna">
-                Carga Horária Noturna:
-              </label>
-              <input type="text" maxlength=6 value='10.25' id='inputCargaHorariaNoturna'>
-            </p>
-
-          </form>
+          <label for="inputNumeroDias" class="col-sm-4 col-sm-offset-2 control-label">Número de dias no mês</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="2" value="31" id="inputNumeroDias">
+          </div>
 
         </div>
 
-      </div>
+        <div class="form-group">
+
+          <label for="inputNumeroOperadoresPorTurno" class="col-sm-4 col-sm-offset-2 control-label">Número MÁXIMO de operadores por turno</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="2" value="5" id="inputNumeroOperadoresPorTurno">
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="inputNumeroTurnos" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de Turnos por Dia</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="1" value="3" id="inputNumeroTurnos">
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="inputDigitosLegendas" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de dígitos na legenda (Ex: A = 1; A2 = 2)</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="2" value="2" id="inputDigitosLegendas">
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="inputCargaHorariaDiurna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Diurna</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="6" value="7.25" id="inputCargaHorariaDiurna">
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="inputCargaHorariaNoturna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Noturna</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="6" value="10.25" id="inputCargaHorariaNoturna">
+          </div>
+
+        </div>
+
+
+      </form>
 
       <br>
 
@@ -159,7 +171,7 @@
   </div>
 
 <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
-<script type="text/javascript" src="js/pessoal.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/pessoal.js" charset="utf-8"></script>
 <script type="text/javascript" src="dados.json" charset="utf-8"></script>
 </body>
 </html>

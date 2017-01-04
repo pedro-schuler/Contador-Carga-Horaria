@@ -42,7 +42,7 @@ $( document ).ready(function() {
         for (var k = 1; k < opTurno + 1; k++) {
           $( "#linhaTurno" + i + j ).append("<input type='text' "+
                   "class='smallinput inputUsuario' maxlength='" + qtdeLegendas +
-                  "' id='" + i + "-" + j + k + "'>");
+                  "' id='" + i + "-" + j + "-" + k + "'>");
         }
 
       }
@@ -151,7 +151,7 @@ $( document ).ready(function() {
         arrayTabelaDias[i][j] = [];
         for (var k = 1; k <= n_operadores; k++) {
 
-          valorCelula = $( "#" + i + "-" + j + k ).val();
+          valorCelula = $( "#" + i + "-" + j + "-" + k ).val();
 
           indiceValorCelula = arrayOperadores.indexOf(valorCelula);
 
@@ -350,16 +350,15 @@ $( document ).ready(function() {
     $( "input[class='smallinput inputUsuario']" ).each(function(){
 
         var id = $(this).attr('id');
-        var idSeparadoNumeroDia = id.split("-");
-        var idSeparadoTurnoOperador = idSeparadoNumeroDia[1].split("");
+        var idSeparado = id.split("-");
         var valor = "";
         var i = 0;
         var j = 0;
         var k = 0;
 
-        i = idSeparadoNumeroDia[0];
-        j = idSeparadoTurnoOperador[0];
-        k = idSeparadoTurnoOperador[1];
+        i = idSeparado[0];
+        j = idSeparado[1];
+        k = idSeparado[2];
         valor = arrayTabelaDias[i][j][k];
 
         $(this).val(valor);
@@ -408,6 +407,7 @@ $( document ).ready(function() {
     criarTabelaResultados(legendasOperadores);
 
     $( '#divTabelaCargaHoraria' ).show();
+    $( '#call-to-action' ).hide();
     $( '#paginaConfiguracoes' ).hide();
 
   });
@@ -433,6 +433,7 @@ $( document ).ready(function() {
     preencheTabelaOperadores();
 
     $( '#divTabelaCargaHoraria' ).show();
+    $( '#call-to-action' ).hide();
     $( '#paginaConfiguracoes' ).hide();
 
   });
