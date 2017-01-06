@@ -17,10 +17,11 @@
     </div>
   </div>
 </nav>
-  
+
 <body>
 
   <div class="container">
+
     <div class="jumbotron" id="call-to-action">
       <h1><i class="fa fa-clock-o" aria-hidden="true"></i> Contagem Básica de Carga Horária</h1>
     </div>
@@ -29,13 +30,22 @@
 
     <div id="paginaConfiguracoes">
 
-      <p class="lead">
-        É permitido utilizar letras e números na escolha das legendas
-        dos operadores.<br>
-        As legendas devem ser inseridas separadas por vírgula e envoltas
-        em aspas.<br>
-        Ex: "A1","A2","A3","A4"...
-      </p><br>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <h3 class="panel-title">Preenchimento das legendas dos operadores</h3>
+            </div>
+            <div class="panel-body">
+              É permitido utilizar letras e números na escolha das legendas
+              dos operadores.<br>
+              As legendas devem ser inseridas separadas por vírgula e envoltas
+              em aspas.<br>
+              Ex: "A1","A2","A3","A4"...
+            </div>
+          </div>
+        </div>
+      </div>
 
       <form class="form-horizontal">
 
@@ -50,19 +60,28 @@
 
       </form>
 
-      <br>
+      <hr>
 
-      <p class="lead">
-        Utilize apenas números para preencher o formulário. <br>
-        Caso não saiba qual valor utilizar, os valores padrão devem ser
-        seguros o suficiente.
-      </p><br>
+      <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <h3 class="panel-title">Preenchimento dos valores de configuração</h3>
+            </div>
+            <div class="panel-body">
+              Utilize apenas números para preencher o formulário. <br>
+              Caso não saiba qual valor utilizar, os valores padrão devem ser
+              seguros o suficiente.
+            </div>
+          </div>
+        </div>
+      </div>
 
       <form class="form-horizontal">
 
         <div class="form-group">
 
-          <label for="inputNumeroDias" class="col-sm-4 col-sm-offset-2 control-label">Número de dias no mês</label>
+          <label for="inputNumeroDias" class="col-sm-4 col-sm-offset-2 control-label">Número de dias no mês (28-31)</label>
           <div class="col-sm-1">
             <input type="text" class="form-control" maxlength="2" value="31" id="inputNumeroDias">
           </div>
@@ -71,16 +90,44 @@
 
         <div class="form-group">
 
-          <label for="inputNumeroOperadoresPorTurno" class="col-sm-4 col-sm-offset-2 control-label">Número MÁXIMO de operadores por turno</label>
+          <label for="inputNumeroOperadoresPorTurno" class="col-sm-4 col-sm-offset-2 control-label">Número MÁXIMO de operadores por turno (2-20)</label>
           <div class="col-sm-1">
             <input type="text" class="form-control" maxlength="2" value="5" id="inputNumeroOperadoresPorTurno">
+          </div>
+
+        </div>       
+
+        <div class="form-group">
+
+          <label for="inputNumeroTrocas" class="col-sm-4 col-sm-offset-2 control-label">Quantidade Máxima de Trocas por Operador (1-99)</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="2" value="6" id="inputNumeroTrocas">
           </div>
 
         </div>
 
         <div class="form-group">
 
-          <label for="inputNumeroTurnos" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de Turnos por Dia</label>
+          <label for="inputCargaHorariaMinima" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Mínima por Operador (100-170)</label>
+          <div class="col-sm-1">
+            <input type="text" class="form-control" maxlength="3" value="144" id="inputCargaHorariaMinima">
+          </div>
+
+        </div>
+
+      </form>
+
+      <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+          <p id="paragrafoConfiguracoes">Configurações Avançadas <i class="fa fa-caret-down" aria-hidden="true"></i></p>          
+        </div>
+      </div>
+
+      <form class="form-horizontal escondido inativo" id="configuracoesAvancadas">
+
+        <div class="form-group">
+
+          <label for="inputNumeroTurnos" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de Turnos por Dia (3)</label>
           <div class="col-sm-1">
             <input type="text" class="form-control" maxlength="1" value="3" id="inputNumeroTurnos">
           </div>
@@ -89,16 +136,16 @@
 
         <div class="form-group">
 
-          <label for="inputDigitosLegendas" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de dígitos na legenda (Ex: A = 1; A2 = 2)</label>
+          <label for="inputDigitosLegendas" class="col-sm-4 col-sm-offset-2 control-label">Quantidade de dígitos na legenda (1-3)</label>
           <div class="col-sm-1">
-            <input type="text" class="form-control" maxlength="2" value="2" id="inputDigitosLegendas">
+            <input type="text" class="form-control" maxlength="2" value="1" id="inputDigitosLegendas">
           </div>
 
         </div>
 
         <div class="form-group">
 
-          <label for="inputCargaHorariaDiurna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Diurna</label>
+          <label for="inputCargaHorariaDiurna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Diurna (0-24)</label>
           <div class="col-sm-1">
             <input type="text" class="form-control" maxlength="6" value="7.25" id="inputCargaHorariaDiurna">
           </div>
@@ -107,70 +154,223 @@
 
         <div class="form-group">
 
-          <label for="inputCargaHorariaNoturna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Noturna</label>
+          <label for="inputCargaHorariaNoturna" class="col-sm-4 col-sm-offset-2 control-label">Carga Horária Noturna (0-24)</label>
           <div class="col-sm-1">
             <input type="text" class="form-control" maxlength="6" value="10.25" id="inputCargaHorariaNoturna">
           </div>
 
         </div>
 
+        <div class="form-group">
+
+          <label for="inputRemoverEtapasComuns" class="col-sm-4 col-sm-offset-2 control-label">Remover Etapas Comuns</label>
+          <div class="col-sm-1">
+            <select class="form-control form-control-sm" name="removerEtapasComuns" id="inputRemoverEtapasComuns">
+              <option value="true" selected>Sim</option>
+              <option value="false">Não</option>
+            </select>
+          </div>
+
+        </div>
 
       </form>
 
       <br>
 
-      <button type="button" name="configurarAmbiente" class="btn btn-primary"
-      id="botaoConfigurarAmbiente">Configurar</button>
+      <div id="botoesConfiguracao">
 
-      <button type="button" name="carregaValores" class="btn btn-danger"
-      id="botaoCarregarValores">Carregar Valores</button>
+        <button type="button" name="configurarAmbiente" class="btn btn-primary"
+        id="botaoConfigurarAmbiente">Configurar <i class="fa fa-cog" aria-hidden="true"></i></button>
+
+        <button type="button" name="carregaValores" class="btn btn-danger"
+        id="botaoCarregarValores">Carregar Dados <i class="fa fa-upload" aria-hidden="true"></i></button>
+
+      </div>
 
     </div>
 
     <br>
 
-    <div class="escondido" id="divTabelaCargaHoraria">
-      <table class="table table-striped table-hover table-condensed"
-                id="tabelaCargaHoraria">
-        <tr>
-          <th>Dias</th>
-          <th>Manhã</th>
-          <th>Tarde</th>
-          <th>Noite</th>
-        </tr>
-      </table>
+    <div class="escondido" id="paginaInsercoes">
 
-      <br>
+      <div id="divTabelaCargaHoraria">
+
+        <h2>Tabela de Operadores</h2>
+
+        <table class="table table-striped table-hover table-condensed"
+                  id="tabelaCargaHoraria">
+          <thead>
+            <tr>
+              <th>Dias</th>
+              <th>Manhã</th>
+              <th>Tarde</th>
+              <th>Noite</th>
+            </tr>
+          </thead>
+        </table>
+
+      </div>
+
+      <hr>
+
+      <div id="divInserirTrocas">
+
+        <h2>Registro de Trocas</h2>
+
+        <form class="form-horizontal">
+
+          <div class="form-group">
+
+            <label for="inputProponente" class="col-sm-2 control-label">Proponente</label>
+            <div class="col-sm-2">
+                <select class="form-control form-control-sm" name="proponente" id="inputProponente">
+                  <option value="" selected>Legenda</option>
+                </select>
+            </div>
+
+            <label for="inputProposto" class="col-sm-2 col-sm-offset-1 control-label">Proposto</label>
+            <div class="col-sm-2">
+                <select class="form-control form-control-sm" name="proposto" id="inputProposto">
+                  <option value="" selected>Legenda</option>
+                </select>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="inputDiaProponente" class="col-sm-2 control-label">Dia Proponente</label>
+            <div class="col-sm-1">
+              <select class="form-control form-control-sm" name="diaProponente" id="inputDiaProponente">
+                <option value="" selected>Dia</option>
+              </select>
+            </div>
+            <label for="inputTurnoProponente" class="sr-only">Turno Proponente</label>
+            <div class="col-sm-1">
+              <select class="form-control form-control-sm" name="turnoProponente" id="inputTurnoProponente">
+                <option value="" selected>Turno</option>
+                <option value="M">M</option>
+                <option value="T">T</option>
+                <option value="N">N</option>
+              </select>
+            </div>
+
+            <label for="inputDiaProposto" class="col-sm-2 col-sm-offset-1 control-label">Dia Proposto</label>
+            <div class="col-sm-1">
+              <select class="form-control form-control-sm" name="diaProposto" id="inputDiaProposto">
+                <option value="" selected>Dia</option>
+              </select>
+            </div>
+            <label for="inputTurnoProposto" class="sr-only">Turno Proposto</label>
+            <div class="col-sm-1">
+              <select class="form-control form-control-sm" name="turnoProposto" id="inputTurnoProposto">
+                <option value="" selected>Turno</option>
+                <option value="M">M</option>
+                <option value="T">T</option>
+                <option value="N">N</option>
+              </select>
+            </div>
+
+          </div>
+
+        </form>
+
+        <button type="button" name="registraTroca" class="btn btn-primary"
+        id="botaoRegistrarTroca">Registrar <i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+
+      </div>
+
+      <hr>
 
       <button type="button" name="calculaCarga" class="btn btn-primary"
-      id="botaoCalcular">Calcular!</button>
+      id="botaoCalcular">Carga Horária <i class="fa fa-bar-chart" aria-hidden="true"></i></button>
 
-      <a class="btn btn-success" id="botaoSalvarValores">Salvar Valores</a>
+      <button type="button" name="mostraTrocas" class="btn btn-primary"
+      id="botaoAcompanharTrocas">Trocas <i class="fa fa-exchange" aria-hidden="true"></i></button>
+
+      <a class="btn btn-success" id="botaoSalvarValores">Salvar Dados <i class="fa fa-hdd-o" aria-hidden="true"></i></a>
 
     </div>
 
     <br>
 
     <div class="escondido" id="divCargaOperadores">
+
+      <div class="row escondido" id="painelAvisoCargaHoraria">
+        <div class="col-sm-12">
+          <div class="panel panel-danger">
+            <div class="panel-heading">
+              <h3 class="panel-title">Aviso de Carga Horária <i class="fa fa-ban" aria-hidden="true"></i></h3>
+            </div>
+            <div class="panel-body" id="corpoPainelAvisoCargaHoraria"></div>
+          </div>
+        </div>
+      </div>
+
       <table class="table table-striped table-hover table-condensed"
                 id="tabelaCargaOperadores">
-        <tr>
-          <th>Operador</th>
-          <th>Carga Horária</th>
-          <th>Etapas Comuns</th>
-          <th>Etapas Eventuais</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Operador</th>
+            <th>Carga Horária</th>
+            <th>Etapas Comuns</th>
+            <th>Etapas Eventuais</th>
+          </tr>
+        </thead>
       </table>
 
       <br>
 
       <button type="button" name="mostraTabela" class="btn btn-primary"
-      id="botaoMostrarTabela">Mostrar Tabela</button>
+      id="botaoMostrarTabela">Mostrar Tabela <i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
 
     </div>
+
+    <br>
+
+    <div class="escondido" id="divTabelaTrocas">
+
+      <div class="row escondido" id="painelAvisoTrocas">
+        <div class="col-sm-12">
+          <div class="panel panel-danger">
+            <div class="panel-heading">
+              <h3 class="panel-title">Não há trocas <i class="fa fa-ban" aria-hidden="true"></i></h3>
+            </div>
+            <div class="panel-body">
+              Pode comemorar, nesse mês não houve trocas.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-striped table-hover table-condensed"
+                id="tabelaTrocas">
+
+        <thead>
+          <tr>
+            <th>Proponente</th>
+            <th># Troca</th>
+            <th>Turno Proponente</th>
+            <th>Proposto</th>
+            <th>Turno Proposto</th>
+            <th>Data Registro</th>
+            <th>Deletar</th>
+          </tr>
+        </thead>
+
+      </table>
+
+      <br>
+
+      <button type="button" name="mostraTabela2" class="btn btn-primary"
+      id="botaoMostrarTabela2">Mostrar Tabela <i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+
+    </div>
+
   </div>
 
 <script type="text/javascript" src="js/jquery.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/moment.min.js" charset="utf-8"></script>
 <script type="text/javascript" src="js/pessoal.js" charset="utf-8"></script>
 <script type="text/javascript" src="dados.json" charset="utf-8"></script>
 </body>
