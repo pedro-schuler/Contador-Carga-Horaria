@@ -131,7 +131,7 @@ $( document ).ready(function() {
 
         for (var k = 1; k < opTurno + 1; k++) {
           $( "#linhaTurno" + i + j ).append("<input type='text' "+
-                  "class='smallinput inputUsuario' maxlength='" + qtdeLegendas +
+                  "class='smallinput inputUsuario form-control' maxlength='" + qtdeLegendas +
                   "' id='" + i + "-" + j + "-" + k + "'>");
         }
 
@@ -340,6 +340,7 @@ $( document ).ready(function() {
             }
             else {
               alert("Você inseriu um usuário não cadastrado no dia " + i);
+              $( "#linhaTurno" + i + j ).addClass( "danger" );
               return -1;
             }
           }
@@ -559,6 +560,20 @@ $( document ).ready(function() {
 
   }
 
+  /*************************************
+  Essa função apenas mostra informação contextual ao usuário
+  Caso não tenham sido feitas trocas no mês é exibido um painel
+  indicativo de que não houveram trocas registradas.
+  *************************************/
+  function mostraAvisoTrocas(arrayRegistroTrocas){
+
+    if (arrayRegistroTrocas.length === 0) {
+      $( '#painelAvisoTrocas' ).show();
+    } else {
+      $( '#painelAvisoTrocas' ).hide();
+    }
+
+  }
   /*************************************
   Essa função preenche a tabela FINAL com as cargas horárias dos operadores.
   A tabela inicial é feita pelo input dos usuários.
@@ -783,6 +798,8 @@ $( document ).ready(function() {
 
     preencheTabelaTrocas(legendasOperadores, arrayRegistroTrocas, configuracao.quantidadeTrocas);
 
+    mostraAvisoTrocas(arrayRegistroTrocas);
+
     $( '#divTabelaTrocas' ).show();
     $( '#paginaInsercoes' ).hide();
 
@@ -827,7 +844,7 @@ $( document ).ready(function() {
                   encodeURIComponent(JSON.stringify(arrayRegistroTrocas)) + ";";
 
       $( "#botaoSalvarValores" ).removeClass("btn btn-success");
-      $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
+      $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download <i class="fa fa-download" aria-hidden="true"></i></a>');
 
     }
 
