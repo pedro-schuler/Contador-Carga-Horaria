@@ -24,7 +24,8 @@ $( document ).ready(function() {
     cargaHorariaDiurna: 7.25,
     cargaHorariaNoturna: 10.25,
     quantidadeTrocas: 6,
-    cargaHorariaMinima: 144
+    cargaHorariaMinima: 144,
+    removerEtapasComuns: "true"
   };
 
   /*************************************
@@ -379,6 +380,12 @@ $( document ).ready(function() {
     CargaHoraria = operador[legendaOperador].etapasComuns.length * cargaDiurna;
     CargaHoraria += operador[legendaOperador].etapasEventuais.length * cargaNoturna;
 
+    if ( CargaHoraria < 0 ) {
+      alert("Aconteceu algum problema inesperado na contagem de carga do" +
+            " operador " + legendaOperador + ". Contacte o Schuler e pare de" +
+            " utilizar o programa enquanto o problema não for resolvido.");
+    }
+
     operador[legendaOperador].cargaHoraria = CargaHoraria;
   }
 
@@ -613,8 +620,18 @@ $( document ).ready(function() {
                             fraseEtapasEventuais);
 
       if ( operador[legendaOperador].cargaHoraria < cargaHorariaMinima ){
-        $( "#linhaTabelaCargaOperadores-" + legendaOperador ).addClass( "danger" );
-        operadoresAbaixoMinimo += 1;
+
+        if ( operador[legendaOperador].cargaHoraria > 0){
+          $( "#linhaTabelaCargaOperadores-" + legendaOperador ).addClass( "danger" );
+          operadoresAbaixoMinimo += 1;
+        }
+        
+      }
+
+      if ( operador[legendaOperador].cargaHoraria > cargaHorariaMinima ){
+
+        $( "#linhaTabelaCargaOperadores-" + legendaOperador ).addClass( "success" );
+        
       }
 
     });
@@ -665,14 +682,15 @@ $( document ).ready(function() {
     var legendas        = $( '#inputLegendaOperadores' ).val();
     legendasOperadores  = JSON.parse("[" + legendas + "]");
 
-    var numeroDias                = $( '#inputNumeroDias' ).val();
-    var numeroTurnos              = $( '#inputNumeroTurnos' ).val();
-    var numeroOperadoresPorTurno  = $( '#inputNumeroOperadoresPorTurno' ).val();
-    var digitosLegendas           = $( '#inputDigitosLegendas' ).val();
-    var cargaHorariaDiurna        = $( '#inputCargaHorariaDiurna' ).val();
-    var cargaHorariaNoturna       = $( '#inputCargaHorariaNoturna' ).val();
-    var quantidadeTrocas          = $( '#inputNumeroTrocas' ).val();
-    var cargaHorariaMinima        = $( '#inputCargaHorariaMinima' ).val();
+    var numeroDias                  = $( '#inputNumeroDias' ).val();
+    var numeroTurnos                = $( '#inputNumeroTurnos' ).val();
+    var numeroOperadoresPorTurno    = $( '#inputNumeroOperadoresPorTurno' ).val();
+    var digitosLegendas             = $( '#inputDigitosLegendas' ).val();
+    var cargaHorariaDiurna          = $( '#inputCargaHorariaDiurna' ).val();
+    var cargaHorariaNoturna         = $( '#inputCargaHorariaNoturna' ).val();
+    var quantidadeTrocas            = $( '#inputNumeroTrocas' ).val();
+    var cargaHorariaMinima          = $( '#inputCargaHorariaMinima' ).val();
+    var removerEtapasComuns         = $( '#inputRemoverEtapasComuns' ).val();
 
     numeroDias                = parseInt(numeroDias, 10);
     numeroTurnos              = parseInt(numeroTurnos, 10);
@@ -707,6 +725,7 @@ $( document ).ready(function() {
       configuracao.cargaHorariaDiurna       = cargaHorariaDiurna;
       configuracao.cargaHorariaNoturna      = cargaHorariaNoturna;
       configuracao.quantidadeTrocas         = quantidadeTrocas;
+      configuracao.removerEtapasComuns      = removerEtapasComuns;
 
       criarOperadores(legendasOperadores);
 
@@ -812,7 +831,9 @@ $( document ).ready(function() {
                               configuracao.cargaHorariaDiurna,
                               configuracao.cargaHorariaNoturna);
 
-      removerEtapasComuns(legendasOperadores);
+      if ( configuracao.removerEtapasComuns === "true" ) {
+        removerEtapasComuns(legendasOperadores);
+      }
 
       preencheTabelaResultado(legendasOperadores,configuracao.cargaHorariaMinima);
 
