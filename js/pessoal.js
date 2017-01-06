@@ -12,6 +12,8 @@ $( document ).ready(function() {
 
   var arrayTabelaDias = [];
 
+  var arrayRegistroTrocas = [];
+
   var operador = [];
 
   var configuracao = {
@@ -20,9 +22,95 @@ $( document ).ready(function() {
     numeroOperadoresPorTurno: 5,
     digitosLegendas: 1,
     cargaHorariaDiurna: 7.25,
-    cargaHorariaNoturna: 10.25
+    cargaHorariaNoturna: 10.25,
+    quantidadeTrocas: 6
   };
 
+  /*************************************
+  Isso é um polyfill pra garantir que a função de checagem de inteiros está
+  disponível para nosso validador de inputs.
+  *************************************/
+  Number.isInteger = Number.isInteger || function(valor) {
+    return typeof valor === "number" && 
+                  isFinite(valor) && 
+                  Math.floor(valor) === valor;
+  };
+
+  /*************************************
+  Essa função recebe o valor do input do usuário e confirma se ele é do
+  tipo (int ou float) correto e se está dentro do intervalo esperado. Além
+  de receber o nome do campo que está sendo avaliado para exibição correta
+  dos alertas na tela.
+  *************************************/
+  function validarInputConfiguracao(input,tipo,minimo,maximo,campo){
+
+    if (tipo === "int"){
+      if (!Number.isInteger(input)){
+        alert("O valor de " + campo + " precisa ser um número inteiro")
+        return -1;
+      }
+    }
+
+    if (input < minimo){
+      alert("O valor de " + campo + " precisa ser um número entre " + minimo +
+            " e " + maximo);
+      return -1;
+    }
+
+    if (input > maximo){
+      alert("O valor de " + campo + " precisa ser um número entre " + minimo +
+            " e " + maximo);
+      return -1;
+    }
+
+    return 1;
+
+  }
+
+  
+  /*************************************
+  Essa função verifica todos os campos do formulário de trocas e impede o registro
+  caso algum dos campos não tenha sido preenchido, o proponente seja o mesmo
+  que o proposto, os turnos propostos sejam os mesmos ou que a mesma troca já
+  tenha sido registrada.
+  *************************************/
+  function validarFormularioTroca(proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,arrayRegistroTrocas){
+
+    if (proponente === "" || proposto === "" || diaProponente === "" ||
+        diaProposto === "" || turnoProponente === "" || turnoProposto === ""){
+      alert("Todos os campos precisam ser preenchidos");
+      return -1;
+    }
+
+    if (proponente === proposto){
+      alert("O proponente não pode ser o mesmo que o proposto")
+      return -1;
+    }
+
+    if (diaProponente === diaProposto && turnoProponente === turnoProposto){
+      alert("A troca precisa ser feita entre turnos distintos")
+      return -1;
+    }
+
+    for (var i = 0; i < arrayRegistroTrocas.length; i++) {
+
+      if (  arrayRegistroTrocas[i].proponente === proponente &&
+            arrayRegistroTrocas[i].proposto === proposto &&
+            arrayRegistroTrocas[i].diaProponente === diaProponente &&
+            arrayRegistroTrocas[i].diaProposto === diaProposto &&
+            arrayRegistroTrocas[i].turnoProponente === turnoProponente &&
+            arrayRegistroTrocas[i].turnoProposto === turnoProposto){
+
+        alert("Esta troca já foi registrada");
+        return -1;
+
+      }
+
+    }
+
+    return 1;
+
+  }
   /*************************************
   Essa função cria a tabela que será utilizada para o input de dados.
   Foi necessário algum voodoo pra fazer funcionar, não olhe!
@@ -30,6 +118,8 @@ $( document ).ready(function() {
   function criarTabelaDias(qtdeDias,qtdeTurnos,opTurno,qtdeLegendas){
 
     var aux = $( "#tabelaCargaHoraria");
+
+    aux.append( "<tbody>" );
 
     for (var i = 1; i < qtdeDias + 1; i++) {
 
@@ -49,6 +139,8 @@ $( document ).ready(function() {
 
     }
 
+    aux.append( "</tbody>" );
+
   }
 
   /*************************************
@@ -58,6 +150,8 @@ $( document ).ready(function() {
   function criarTabelaResultados(arrayOperadores){
 
     aux = $("#tabelaCargaOperadores");
+
+    aux.append("<tbody>");
 
     arrayOperadores.forEach( function(legendaOperador){
 
@@ -70,6 +164,68 @@ $( document ).ready(function() {
 
     });
 
+    aux.append("</tbody>");
+
+  }
+
+  /*************************************
+  Essa função recebe como parâmetros o número de dias e as legendas de
+  operadores configuradas pelo usuário e monta os selects de acordo com
+  as opções disponíveis.
+  *************************************/
+  function configurarFormularioTrocas(arrayOperadores, n_dias){
+
+    inputProponente     = $("#inputProponente");
+    inputProposto       = $("#inputProposto");
+    inputDiaProponente  = $("#inputDiaProponente");
+    inputDiaProposto    = $("#inputDiaProposto");
+
+    arrayOperadores.forEach( function(legendaOperador){
+
+      inputProponente.append("<option value='" + legendaOperador + "'>" +
+                              legendaOperador + "</option>");
+
+      inputProposto.append("<option value='" + legendaOperador + "'>" +
+                            legendaOperador + "</option>");
+
+    });
+
+    for (var i = 1; i <= n_dias; i++) {
+
+      inputDiaProponente.append("<option value='" + i + "'>" + i + "</option>");
+
+      inputDiaProposto.append("<option value='" + i + "'>" + i + "</option>");
+
+    }
+
+  }
+
+  /*************************************
+  Essa função é um construtor de objetos
+  Os objetos criados tem as propriedades proponente, proposto, diaProponente
+  diaProposto, turnoProponente, turnoProposto e dataRegistro
+
+  O uso da função é:
+  X = new objetoTrocas(A,B,C,I,J,K,L);
+
+  Assim é criado um objeto X que tem suas propriedades acessas da seguinte
+  forma:
+  X.proponente (Resultado A)
+  X.proposto (Resultado B)
+  X.diaProponente (Resultado C)
+  X.diaProposto (Resultado I)
+  X.turnoProponente (Resultado J)
+  X.turnoProposto (Resultado K)
+  X.dataRegistro (Resultado L)
+  *************************************/
+  function objetoTrocas(proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,dataRegistro){
+    this.proponente       = proponente;
+    this.proposto         = proposto;
+    this.diaProponente    = diaProponente;
+    this.diaProposto      = diaProposto;
+    this.turnoProponente  = turnoProponente;
+    this.turnoProposto    = turnoProposto;
+    this.dataRegistro     = dataRegistro;
   }
 
   /*************************************
@@ -88,9 +244,9 @@ $( document ).ready(function() {
 
   *************************************/
   function objetoOperador(cargahoraria,etapascomuns,etapaseventuais){
-    this.cargaHoraria = cargahoraria;
-    this.etapasComuns = etapascomuns;
-    this.etapasEventuais = etapaseventuais;
+    this.cargaHoraria     = cargahoraria;
+    this.etapasComuns     = etapascomuns;
+    this.etapasEventuais  = etapaseventuais;
   }
 
   /*************************************
@@ -134,6 +290,29 @@ $( document ).ready(function() {
   }
 
   /*************************************
+  Essa função recebe os parâmetros do formulário de trocas, cria um objetoTrocas
+  e em seguida armazena esse objeto na última posição do array que guarda todo
+  o registro de trocas (arrayRegistroTrocas).
+  *************************************/
+  function registrarTroca(arrayRegistroTrocas,proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto){
+
+    var dataRegistro = moment();
+    var troca        = new objetoTrocas(proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,dataRegistro);
+    arrayRegistroTrocas.push(troca);
+
+  }
+
+  /*************************************
+  Essa função recebe o índice do registro no arrayRegistroTrocas e elimina
+  o referido registro do array permanentemente.
+  *************************************/
+  function deletarTroca(indice,arrayRegistroTrocas){
+
+    arrayRegistroTrocas.splice(indice, 1);
+
+  }
+
+  /*************************************
   Essa função varre os inputs do usuário e salva um array com todos os valores
   preenchidos. Esse array é salvo na variável arrayTabelaDias e pode ser
   acessado da forma:
@@ -156,11 +335,12 @@ $( document ).ready(function() {
           indiceValorCelula = arrayOperadores.indexOf(valorCelula);
 
           if (indiceValorCelula == -1){
-            if (valorCelula == ""){
+            if (valorCelula === ""){
               continue;
             }
             else {
               alert("Você inseriu um usuário não cadastrado no dia " + i);
+              return -1;
             }
           }
 
@@ -169,6 +349,8 @@ $( document ).ready(function() {
         }
       }
     }
+
+    return 1;
 
   }
 
@@ -237,7 +419,7 @@ $( document ).ready(function() {
 
           valorCelula = arrayTabelaDias[i][j][k];
 
-          if (valorCelula == ""){
+          if (valorCelula === ""){
             continue;
           }
           else {
@@ -310,6 +492,74 @@ $( document ).ready(function() {
   }
 
   /*************************************
+  Essa função percorre o array com todos os registro de trocas e cria a tabela
+  de registro de trocas para uma exibição amigável dos dados além de um botão
+  para deletar o registro.
+  *************************************/
+  function preencheTabelaTrocas(arrayOperadores, arrayRegistroTrocas, quantidadeTrocas){
+
+    aux = $( "#tabelaTrocas" );
+
+    aux.append("<tbody>");
+
+    arrayOperadores.forEach( function(legendaOperador){
+
+      var numeroTroca   = 0;
+      var dataRegistro  = "";
+
+      for (var i = 0; i < arrayRegistroTrocas.length; i++) {
+
+        if (arrayRegistroTrocas[i].proponente === legendaOperador) {
+
+          numeroTroca += 1;
+
+          if (numeroTroca > quantidadeTrocas) {
+            alert("O operador " + arrayRegistroTrocas[i].proponente + " possui " +
+                  "mais que " + quantidadeTrocas + " trocas");
+          }
+
+          dataRegistro = moment(arrayRegistroTrocas[i].dataRegistro).format("DD/MM");
+
+          aux.append("<tr id='linhaTabelaTroca-" + i + "'>"+
+                      "<td>" + arrayRegistroTrocas[i].proponente + "</td>"+
+                      "<td>" + numeroTroca + "</td>"+
+                      "<td>" + arrayRegistroTrocas[i].diaProponente + "-" + arrayRegistroTrocas[i].turnoProponente + "</td>" +
+                      "<td>" + arrayRegistroTrocas[i].proposto + "</td>" +
+                      "<td>" + arrayRegistroTrocas[i].diaProposto + "-" +
+                      arrayRegistroTrocas[i].turnoProposto + "</td>" +
+                      "<td>" + dataRegistro + "</td>" +
+                      "<td><button type='button' name='deletarRegistro-" +
+                      i + "' class='btn btn-danger btn-sm btn-deletar' id='deletarRegistro-" +
+                      i + "'><i class='fa fa-trash' aria-hidden='true'></i></button></td>" +
+                      "</tr>");
+        }
+
+      }
+
+    });
+
+    aux.append("</tbody>");
+
+    $( '.btn-deletar' ).on( "click", function(){
+
+      var id          = $(this).attr('id');
+      var idSeparado  = id.split("-");
+
+      indice          = idSeparado[1];
+
+      deletarTroca(indice,arrayRegistroTrocas);
+
+      alert("Troca deletada!");
+
+      $("#tabelaTrocas tbody").remove();
+
+      preencheTabelaTrocas(arrayOperadores, arrayRegistroTrocas, quantidadeTrocas);
+
+    });
+
+  }
+
+  /*************************************
   Essa função preenche a tabela FINAL com as cargas horárias dos operadores.
   A tabela inicial é feita pelo input dos usuários.
   *************************************/
@@ -324,8 +574,8 @@ $( document ).ready(function() {
         fraseEtapasComuns += operador[legendaOperador].etapasComuns[i] + ", ";
       }
 
-      for (var i = 0; i < operador[legendaOperador].etapasEventuais.length; i++) {
-        fraseEtapasEventuais += operador[legendaOperador].etapasEventuais[i] + ", ";
+      for (var j = 0; j < operador[legendaOperador].etapasEventuais.length; j++) {
+        fraseEtapasEventuais += operador[legendaOperador].etapasEventuais[j] + ", ";
       }
 
       $("#operador" + legendaOperador + "-cargaHoraria").html(
@@ -373,53 +623,79 @@ $( document ).ready(function() {
   *************************************/
   $( '#botaoConfigurarAmbiente' ).on( "click", function(){
 
-    var legendas = $( '#inputLegendaOperadores' ).val();
-    legendasOperadores = JSON.parse("[" + legendas + "]");
+    var configuracaoCorreta = -1;
 
-    var numeroDias = $( '#inputNumeroDias' ).val();
-    var numeroTurnos = $( '#inputNumeroTurnos' ).val();
-    var numeroOperadoresPorTurno = $( '#inputNumeroOperadoresPorTurno' ).val();
-    var digitosLegendas = $( '#inputDigitosLegendas' ).val();
-    var cargaHorariaDiurna = $( '#inputCargaHorariaDiurna' ).val();
-    var cargaHorariaNoturna = $( '#inputCargaHorariaNoturna' ).val();
+    var legendas        = $( '#inputLegendaOperadores' ).val();
+    legendasOperadores  = JSON.parse("[" + legendas + "]");
 
-    numeroDias = parseInt(numeroDias, 10);
-    numeroTurnos = parseInt(numeroTurnos, 10);
-    numeroOperadoresPorTurno = parseInt(numeroOperadoresPorTurno, 10);
-    digitosLegendas = parseInt(digitosLegendas, 10);
-    cargaHorariaDiurna = parseFloat(cargaHorariaDiurna);
-    cargaHorariaNoturna = parseFloat(cargaHorariaNoturna);
+    var numeroDias                = $( '#inputNumeroDias' ).val();
+    var numeroTurnos              = $( '#inputNumeroTurnos' ).val();
+    var numeroOperadoresPorTurno  = $( '#inputNumeroOperadoresPorTurno' ).val();
+    var digitosLegendas           = $( '#inputDigitosLegendas' ).val();
+    var cargaHorariaDiurna        = $( '#inputCargaHorariaDiurna' ).val();
+    var cargaHorariaNoturna       = $( '#inputCargaHorariaNoturna' ).val();
+    var quantidadeTrocas          = $( '#inputNumeroTrocas' ).val();
 
-    configuracao.numeroDias = numeroDias;
-    configuracao.numeroTurnos = numeroTurnos;
-    configuracao.numeroOperadoresPorTurno = numeroOperadoresPorTurno;
-    configuracao.digitosLegendas = digitosLegendas;
-    configuracao.cargaHorariaDiurna = cargaHorariaDiurna;
-    configuracao.cargaHorariaNoturna = cargaHorariaNoturna;
+    numeroDias                = parseInt(numeroDias, 10);
+    numeroTurnos              = parseInt(numeroTurnos, 10);
+    numeroOperadoresPorTurno  = parseInt(numeroOperadoresPorTurno, 10);
+    digitosLegendas           = parseInt(digitosLegendas, 10);
+    cargaHorariaDiurna        = parseFloat(cargaHorariaDiurna);
+    cargaHorariaNoturna       = parseFloat(cargaHorariaNoturna);
+    quantidadeTrocas          = parseInt(quantidadeTrocas, 10);
 
-    criarOperadores(legendasOperadores);
+    var n_dias        = validarInputConfiguracao(numeroDias,"int",28,31,"número de dias");
+    var n_turnos      = validarInputConfiguracao(numeroTurnos,"int",3,3,"número de turnos");
+    var op_turnos     = validarInputConfiguracao(numeroOperadoresPorTurno,"int",2,20,"número de operadores");
+    var digit_legenda = validarInputConfiguracao(digitosLegendas,"int",1,3,"dígitos das legendas");
+    var carga_diurna  = validarInputConfiguracao(cargaHorariaDiurna,"float",0,24,"carga horária diurna");
+    var carga_noturna = validarInputConfiguracao(cargaHorariaDiurna,"float",0,24,"carga horária noturna");
+    var n_trocas      = validarInputConfiguracao(quantidadeTrocas,"int",1,99,"quantidade trocas");
 
-    criarTabelaDias(configuracao.numeroDias,
-                    configuracao.numeroTurnos,
-                    configuracao.numeroOperadoresPorTurno,
-                    configuracao.digitosLegendas);
+    if (n_dias === 1 && n_turnos === 1 && op_turnos === 1 && digit_legenda === 1 && carga_diurna === 1 && carga_noturna === 1 && n_trocas === 1) {
 
-    criarTabelaResultados(legendasOperadores);
+      configuracaoCorreta = 1;
 
-    $( '#divTabelaCargaHoraria' ).show();
-    $( '#call-to-action' ).hide();
-    $( '#paginaConfiguracoes' ).hide();
+    }
+
+    if (configuracaoCorreta === 1) {
+
+      configuracao.numeroDias               = numeroDias;
+      configuracao.numeroTurnos             = numeroTurnos;
+      configuracao.numeroOperadoresPorTurno = numeroOperadoresPorTurno;
+      configuracao.digitosLegendas          = digitosLegendas;
+      configuracao.cargaHorariaDiurna       = cargaHorariaDiurna;
+      configuracao.cargaHorariaNoturna      = cargaHorariaNoturna;
+      configuracao.quantidadeTrocas         = quantidadeTrocas;
+
+      criarOperadores(legendasOperadores);
+
+      criarTabelaDias(configuracao.numeroDias,
+                      configuracao.numeroTurnos,
+                      configuracao.numeroOperadoresPorTurno,
+                      configuracao.digitosLegendas);
+
+      configurarFormularioTrocas(legendasOperadores, configuracao.numeroDias);
+
+      criarTabelaResultados(legendasOperadores);
+
+      $( '#paginaInsercoes' ).show();
+      $( '#call-to-action' ).hide();
+      $( '#paginaConfiguracoes' ).hide();
+
+    }
 
   });
 
   $( '#botaoCarregarValores' ).on( "click", function(){
 
-    arrayTabelaDias = arrayTabelaDiasSalvo;
-    configuracao = configuracaoSalvo;
-    legendasOperadores = legendasOperadoresSalvo;
+    arrayTabelaDias     = arrayTabelaDiasSalvo;
+    configuracao        = configuracaoSalvo;
+    legendasOperadores  = legendasOperadoresSalvo;
+    arrayRegistroTrocas = arrayRegistroTrocasSalvo;
 
     alert("Cuidado ao utilizar essa função. Tenha certeza que os valores" +
-          " configurados são os que você espera.")
+          " configurados são os que você espera.");
 
     criarOperadores(legendasOperadores);
 
@@ -428,40 +704,87 @@ $( document ).ready(function() {
                     configuracao.numeroOperadoresPorTurno,
                     configuracao.digitosLegendas);
 
+    configurarFormularioTrocas(legendasOperadores, configuracao.numeroDias);
+
     criarTabelaResultados(legendasOperadores);
 
     preencheTabelaOperadores();
 
-    $( '#divTabelaCargaHoraria' ).show();
+    $( '#paginaInsercoes' ).show();
     $( '#call-to-action' ).hide();
     $( '#paginaConfiguracoes' ).hide();
 
   });
 
+  $( '#botaoRegistrarTroca' ).on( "click", function(){
+
+    formularioCorreto = -1;
+
+    proponente      = $( '#inputProponente' ).val();
+    proposto        = $( '#inputProposto' ).val();
+    diaProponente   = $( '#inputDiaProponente' ).val();
+    diaProposto     = $( '#inputDiaProposto' ).val();
+    turnoProponente = $( '#inputTurnoProponente' ).val();
+    turnoProposto   = $( '#inputTurnoProposto' ).val();
+
+    formularioCorreto = validarFormularioTroca(proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,arrayRegistroTrocas);
+
+    if (formularioCorreto === 1) {
+
+      registrarTroca(arrayRegistroTrocas,proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto);
+
+      alert("Troca registrada");
+
+      $( '#inputProponente' ).val("");
+      $( '#inputProposto' ).val("");
+      $( '#inputDiaProponente' ).val("");
+      $( '#inputDiaProposto' ).val("");
+      $( '#inputTurnoProponente' ).val("");
+      $( '#inputTurnoProposto' ).val("");
+
+    }
+
+  });
+
   $( '#botaoCalcular' ).on( "click", function(){
 
-    criarArrayTabelaDias(legendasOperadores,
+    var todosUsuariosCorretos = -1;
+
+    var todosUsuariosCorretos = criarArrayTabelaDias(legendasOperadores,
                           configuracao.numeroDias,
                           configuracao.numeroTurnos,
                           configuracao.numeroOperadoresPorTurno);
 
-    zerarOperadores(legendasOperadores);
+    if (todosUsuariosCorretos === 1) {
 
-    calcularEtapasTodos(legendasOperadores,
-                        configuracao.numeroDias,
-                        configuracao.numeroTurnos,
-                        configuracao.numeroOperadoresPorTurno);
+      zerarOperadores(legendasOperadores);
 
-    calcularCargasHorarias(legendasOperadores,
-                            configuracao.cargaHorariaDiurna,
-                            configuracao.cargaHorariaNoturna);
+      calcularEtapasTodos(legendasOperadores,
+                          configuracao.numeroDias,
+                          configuracao.numeroTurnos,
+                          configuracao.numeroOperadoresPorTurno);
 
-    removerEtapasComuns(legendasOperadores);
+      calcularCargasHorarias(legendasOperadores,
+                              configuracao.cargaHorariaDiurna,
+                              configuracao.cargaHorariaNoturna);
 
-    preencheTabelaResultado(legendasOperadores);
+      removerEtapasComuns(legendasOperadores);
 
-    $( '#divCargaOperadores' ).show();
-    $( '#divTabelaCargaHoraria' ).hide();
+      preencheTabelaResultado(legendasOperadores);
+
+      $( '#divCargaOperadores' ).show();
+      $( '#paginaInsercoes' ).hide();
+
+    }
+
+  });
+
+  $( '#botaoAcompanharTrocas' ).on( "click", function(){
+
+    preencheTabelaTrocas(legendasOperadores, arrayRegistroTrocas, configuracao.quantidadeTrocas);
+
+    $( '#divTabelaTrocas' ).show();
+    $( '#paginaInsercoes' ).hide();
 
   });
 
@@ -469,27 +792,44 @@ $( document ).ready(function() {
 
     zerarOperadores(legendasOperadores);
 
-    $( '#divTabelaCargaHoraria' ).show();
+    $( '#paginaInsercoes' ).show();
     $( '#divCargaOperadores' ).hide();
 
   });
 
-  $('#botaoSalvarValores' ).on( "click", function(){
+  $( '#botaoMostrarTabela2' ).on( "click", function(){
 
-    criarArrayTabelaDias(legendasOperadores,
+    $("#tabelaTrocas tbody").remove();
+
+    $( '#paginaInsercoes' ).show();
+    $( '#divTabelaTrocas' ).hide();
+
+  });
+
+  $( '#botaoSalvarValores' ).on( "click", function(){
+
+    var todosUsuariosCorretos = -1;
+
+    todosUsuariosCorretos = criarArrayTabelaDias(legendasOperadores,
                           configuracao.numeroDias,
                           configuracao.numeroTurnos,
                           configuracao.numeroOperadoresPorTurno);
 
-    var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " +
-                encodeURIComponent(JSON.stringify(arrayTabelaDias)) +
-                "; configuracaoSalvo = " +
-                encodeURIComponent(JSON.stringify(configuracao)) +
-                "; legendasOperadoresSalvo = " +
-                encodeURIComponent(JSON.stringify(legendasOperadores)) + ";";
+    if (todosUsuariosCorretos === 1) {
 
-    $( "#botaoSalvarValores" ).removeClass("btn btn-success");
-    $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
+      var dados = "text/json;charset=utf-8, arrayTabelaDiasSalvo = " +
+                  encodeURIComponent(JSON.stringify(arrayTabelaDias)) +
+                  "; configuracaoSalvo = " +
+                  encodeURIComponent(JSON.stringify(configuracao)) +
+                  "; legendasOperadoresSalvo = " +
+                  encodeURIComponent(JSON.stringify(legendasOperadores)) +
+                  "; arrayRegistroTrocasSalvo = " +
+                  encodeURIComponent(JSON.stringify(arrayRegistroTrocas)) + ";";
+
+      $( "#botaoSalvarValores" ).removeClass("btn btn-success");
+      $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download JSON</a>');
+
+    }
 
   });
 
