@@ -23,7 +23,8 @@ $( document ).ready(function() {
     digitosLegendas: 1,
     cargaHorariaDiurna: 7.25,
     cargaHorariaNoturna: 10.25,
-    quantidadeTrocas: 6
+    quantidadeTrocas: 6,
+    cargaHorariaMinima: 144
   };
 
   /*************************************
@@ -46,7 +47,14 @@ $( document ).ready(function() {
 
     if (tipo === "int"){
       if (!Number.isInteger(input)){
-        alert("O valor de " + campo + " precisa ser um número inteiro")
+        alert("O valor de " + campo + " precisa ser um número inteiro");
+        return -1;
+      }
+    }
+
+    if (tipo === "float"){
+      if (isNaN(input)){
+        alert("O valor de " + campo + " precisa ser um número");
         return -1;
       }
     }
@@ -155,7 +163,7 @@ $( document ).ready(function() {
 
     arrayOperadores.forEach( function(legendaOperador){
 
-      aux.append("<tr>"+
+      aux.append("<tr id='linhaTabelaCargaOperadores-" + legendaOperador + "'>"+
                 "<td>" + legendaOperador + "</td>"+
                 "<td><span id='operador" + legendaOperador + "-cargaHoraria'></span></td>"+
                 "<td><span id='operador" + legendaOperador + "-etapaComum'></span></td>"+
@@ -578,7 +586,9 @@ $( document ).ready(function() {
   Essa função preenche a tabela FINAL com as cargas horárias dos operadores.
   A tabela inicial é feita pelo input dos usuários.
   *************************************/
-  function preencheTabelaResultado(arrayOperadores){
+  function preencheTabelaResultado(arrayOperadores,cargaHorariaMinima){
+
+    var operadoresAbaixoMinimo = 0;
 
     arrayOperadores.forEach( function(legendaOperador){
 
@@ -602,7 +612,19 @@ $( document ).ready(function() {
       $("#operador" + legendaOperador + "-etapaEventual").html(
                             fraseEtapasEventuais);
 
+      if ( operador[legendaOperador].cargaHoraria < cargaHorariaMinima ){
+        $( "#linhaTabelaCargaOperadores-" + legendaOperador ).addClass( "danger" );
+        operadoresAbaixoMinimo += 1;
+      }
+
     });
+
+    if ( operadoresAbaixoMinimo > 0 ) {
+
+      $( "#corpoPainelAvisoCargaHoraria" ).html("Aconteceu algum problema. Há " + operadoresAbaixoMinimo +
+                                              " operador(es) abaixo da carga horária mínima.");
+      $( "#painelAvisoCargaHoraria" ).show();
+    }
 
   }
 
@@ -612,7 +634,7 @@ $( document ).ready(function() {
   *************************************/
   function preencheTabelaOperadores(){
 
-    $( "input[class='smallinput inputUsuario']" ).each(function(){
+    $( "input[class='smallinput inputUsuario form-control']" ).each(function(){
 
         var id = $(this).attr('id');
         var idSeparado = id.split("-");
@@ -650,6 +672,7 @@ $( document ).ready(function() {
     var cargaHorariaDiurna        = $( '#inputCargaHorariaDiurna' ).val();
     var cargaHorariaNoturna       = $( '#inputCargaHorariaNoturna' ).val();
     var quantidadeTrocas          = $( '#inputNumeroTrocas' ).val();
+    var cargaHorariaMinima        = $( '#inputCargaHorariaMinima' ).val();
 
     numeroDias                = parseInt(numeroDias, 10);
     numeroTurnos              = parseInt(numeroTurnos, 10);
@@ -658,16 +681,18 @@ $( document ).ready(function() {
     cargaHorariaDiurna        = parseFloat(cargaHorariaDiurna);
     cargaHorariaNoturna       = parseFloat(cargaHorariaNoturna);
     quantidadeTrocas          = parseInt(quantidadeTrocas, 10);
+    cargaHorariaMinima        = parseFloat(cargaHorariaMinima);
 
     var n_dias        = validarInputConfiguracao(numeroDias,"int",28,31,"número de dias");
     var n_turnos      = validarInputConfiguracao(numeroTurnos,"int",3,3,"número de turnos");
     var op_turnos     = validarInputConfiguracao(numeroOperadoresPorTurno,"int",2,20,"número de operadores");
     var digit_legenda = validarInputConfiguracao(digitosLegendas,"int",1,3,"dígitos das legendas");
     var carga_diurna  = validarInputConfiguracao(cargaHorariaDiurna,"float",0,24,"carga horária diurna");
-    var carga_noturna = validarInputConfiguracao(cargaHorariaDiurna,"float",0,24,"carga horária noturna");
+    var carga_noturna = validarInputConfiguracao(cargaHorariaNoturna,"float",0,24,"carga horária noturna");
     var n_trocas      = validarInputConfiguracao(quantidadeTrocas,"int",1,99,"quantidade trocas");
+    var carga_min     = validarInputConfiguracao(cargaHorariaMinima,"float",100,170,"carga horária mínima");
 
-    if (n_dias === 1 && n_turnos === 1 && op_turnos === 1 && digit_legenda === 1 && carga_diurna === 1 && carga_noturna === 1 && n_trocas === 1) {
+    if (n_dias === 1 && n_turnos === 1 && op_turnos === 1 && digit_legenda === 1 && carga_diurna === 1 && carga_noturna === 1 && n_trocas === 1 && carga_min === 1) {
 
       configuracaoCorreta = 1;
 
@@ -697,6 +722,8 @@ $( document ).ready(function() {
       $( '#paginaInsercoes' ).show();
       $( '#call-to-action' ).hide();
       $( '#paginaConfiguracoes' ).hide();
+
+      $('body').scrollTop(0);
 
     }
 
@@ -728,6 +755,8 @@ $( document ).ready(function() {
     $( '#paginaInsercoes' ).show();
     $( '#call-to-action' ).hide();
     $( '#paginaConfiguracoes' ).hide();
+
+    $('body').scrollTop(0);
 
   });
 
@@ -785,10 +814,12 @@ $( document ).ready(function() {
 
       removerEtapasComuns(legendasOperadores);
 
-      preencheTabelaResultado(legendasOperadores);
+      preencheTabelaResultado(legendasOperadores,configuracao.cargaHorariaMinima);
 
       $( '#divCargaOperadores' ).show();
       $( '#paginaInsercoes' ).hide();
+
+      $('body').scrollTop(0);
 
     }
 
@@ -803,6 +834,8 @@ $( document ).ready(function() {
     $( '#divTabelaTrocas' ).show();
     $( '#paginaInsercoes' ).hide();
 
+    $('body').scrollTop(0);
+
   });
 
   $( '#botaoMostrarTabela' ).on( "click", function(){
@@ -812,6 +845,12 @@ $( document ).ready(function() {
     $( '#paginaInsercoes' ).show();
     $( '#divCargaOperadores' ).hide();
 
+    $( "#tabelaCargaOperadores tr").removeClass( "danger" );
+    $( "#corpoPainelAvisoCargaHoraria" ).html( "" );
+    $( "#painelAvisoCargaHoraria" ).hide();
+
+    $('body').scrollTop(0);
+
   });
 
   $( '#botaoMostrarTabela2' ).on( "click", function(){
@@ -820,6 +859,8 @@ $( document ).ready(function() {
 
     $( '#paginaInsercoes' ).show();
     $( '#divTabelaTrocas' ).hide();
+
+    $('body').scrollTop(0);
 
   });
 
@@ -843,8 +884,35 @@ $( document ).ready(function() {
                   "; arrayRegistroTrocasSalvo = " +
                   encodeURIComponent(JSON.stringify(arrayRegistroTrocas)) + ";";
 
-      $( "#botaoSalvarValores" ).removeClass("btn btn-success");
-      $( "#botaoSalvarValores" ).html('<a class="btn btn-success" href="data:' + dados + '" download="dados.json">Download <i class="fa fa-download" aria-hidden="true"></i></a>');
+      $( "#botaoSalvarValores" ).hide();
+      $( "#botaoSalvarValores" ).after('<a class="btn btn-success" id="botaoDownloadDados" href="data:' + dados + '" download="dados.json">Download <i class="fa fa-download" aria-hidden="true"></i></a>');
+
+      $( "#botaoDownloadDados" ).on( "click", function(){
+        $( "#botaoDownloadDados" ).remove();
+        $( "#botaoSalvarValores" ).show();
+      });
+
+    }
+
+  });
+
+  $( "#paragrafoConfiguracoes" ).on("click", function(){
+
+    if ($( "#configuracoesAvancadas" ).hasClass( "inativo" )){
+
+    $( "#configuracoesAvancadas" ).fadeIn( 600 );
+    $( "#paragrafoConfiguracoes" ).html("<p id='paragrafoConfiguracoes'>Configurações Avançadas <i class='fa fa-caret-up' aria-hidden='true'></i></p>");
+    $( "#configuracoesAvancadas" ).removeClass( "inativo" ).addClass( "ativo" );
+    return 1;
+
+    }
+
+    if ($( "#configuracoesAvancadas" ).hasClass( "ativo" )){
+
+    $( "#configuracoesAvancadas" ).fadeOut( 200 );
+    $( "#paragrafoConfiguracoes" ).html("<p id='paragrafoConfiguracoes'>Configurações Avançadas <i class='fa fa-caret-down' aria-hidden='true'></i></p>");
+    $( "#configuracoesAvancadas" ).removeClass( "ativo" ).addClass( "inativo" );
+    return 1;
 
     }
 
