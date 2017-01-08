@@ -22,15 +22,13 @@ Ex.2: "A1","A2","A3","A4","B1","B2","B3"...
 
 ## Configurações Avançadas
 
-1 - O número máximo de turnos é definido por padrão ser 3 turnos por dia. Esse campo não aceita outros valores, ele foi mantido caso surja alguma necessidade especial de dividir os dias em mais turnos, mas as tabelas da aplicação não estão adaptadas para isso.
+1 - A quantidade de dígitos na legenda serve para informar à aplicação qual o formato de legendas utilizado. As legendas do CAIS-RE apresentam só um dígito nesse campo, e foi utilizado este padrão.
 
-2 - A quantidade de dígitos na legenda serve para informar à aplicação qual o formato de legendas utilizado. As legendas do CAIS-RE apresentam só um dígito nesse campo, e foi utilizado este padrão.
-
-3 - As cargas horárias diurnas e noturnas devem somar 24 horas, e só aceitam valores dentro desse intervalo, não permitindo números negativos. A parte facrionária das horas deve ser separada por ponto, e não por vírgula.
+2 - As cargas horárias diurnas e noturnas devem somar 24 horas, e só aceitam valores dentro desse intervalo, não permitindo números negativos. A parte facrionária das horas deve ser separada por ponto, e não por vírgula.
 Correto: 10.25
 Errado: 10,25
 
-4 - A FAB só paga uma etapa por dia, seja ela eventual ou comum. Caso o operador trabalhe dois turnos no mesmo dia é dado preferência às etapas eventuais, que remuneram melhor. A aplicação remove automaticamente as etapas comuns nos dias em que houver conflito com as etapas eventuais, mas caso o escalante deseje imprimir na tela todos os dias trabalhados essa função pode ser configurada para "não".
+3 - A FAB só paga uma etapa por dia, seja ela eventual ou comum. Caso o operador trabalhe dois turnos no mesmo dia é dado preferência às etapas eventuais, que remuneram melhor. A aplicação remove automaticamente as etapas comuns nos dias em que houver conflito com as etapas eventuais, mas caso o escalante deseje imprimir na tela todos os dias trabalhados essa função pode ser configurada para "não".
 
 ## Botões de configuração
 
@@ -42,13 +40,13 @@ Carregar dados - Caso essa opção seja selecionada os valores de configuração
 
 ## Tabela de Operadores
 
-Preenchimento: As quadrículas podem ser preenchidas com a quantidade de dígitos definida na configuração ou carregadas a partir do arquivo salvo. A aplicação rejeitará caso se tente preencher um número maior de dígitos nesses campos. Caso seja preenchido um operador que não conste na configuração de legendas a aplicação recusará a calcular as cargas horárias e apresentará em vermelho o turno em que foi inserido o operador errado.
+Preenchimento: As quadrículas podem ser preenchidas com a quantidade de dígitos definida na configuração ou carregadas a partir do arquivo salvo. A aplicação rejeitará caso se tente preencher um número maior de dígitos nesses campos. Caso seja preenchido um operador que não conste na configuração de legendas a aplicação recusará a calcular as cargas horárias e apresentará em vermelho o turno em que foi inserido o operador errado. Caso o mesmo operador seja inserido duas vezes em um turno ou seja inserido em turnos adjacentes a aplicação recusará a continuar com o cálculo de carga horária
 
 ## Registro de Trocas
 
-Preenchimento: Todos os campos deverão ser preenchidos. Um operador não poderá realizar troca consigo mesmo e as trocas não podem ser efetuadas se o turno do proponente e do proposto for o mesmo. Qualquer troca que atenda esses critérios será salva na lista de trocas, ainda que essa troca cause conflito de turnos com o proponente ou proposto.
+Preenchimento: Todos os campos deverão ser preenchidos. Um operador não poderá realizar troca consigo mesmo e as trocas não podem ser efetuadas se o turno do proponente e do proposto for o mesmo. Adicionalmente é verificado se a troca gera conflitos na escala, caso seja verificado que existe um conflito a troca é recusada. Se o programa não conseguir verificar por conflitos a troca é registrada mas nada é alterado.
 
-Registro: A troca não é salva automaticamente após o preenchimento do formulário, é necessário sempre clica no botão registrar, caso contrário a troca será perdida.
+Registro: A troca não é salva automaticamente após o preenchimento do formulário, é necessário sempre clicar no botão registrar, caso contrário a troca será perdida.
 
 ## Botões de cálculo
 
