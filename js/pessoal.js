@@ -47,17 +47,26 @@ $( document ).ready(function() {
   function validarInputConfiguracao(input,tipo,minimo,maximo,campo){
 
     if (tipo === "int"){
-      if (!Number.isInteger(input)){
-        alert("O valor de " + campo + " precisa ser um número inteiro");
-        return -1;
-      }
-    }
 
-    if (tipo === "float"){
       if (isNaN(input)){
         alert("O valor de " + campo + " precisa ser um número");
         return -1;
       }
+
+      if (!Number.isInteger(input)){
+        alert("O valor de " + campo + " precisa ser um número inteiro");
+        return -1;
+      }
+
+    }
+
+    if (tipo === "float"){
+
+      if (isNaN(input)){
+        alert("O valor de " + campo + " precisa ser um número");
+        return -1;
+      }
+
     }
 
     if (input < minimo){
@@ -70,6 +79,194 @@ $( document ).ready(function() {
       alert("O valor de " + campo + " precisa ser um número entre " + minimo +
             " e " + maximo);
       return -1;
+    }
+
+    return 1;
+
+  }
+
+  /*************************************
+  Essa função recebe todos os inputs inseridos na página de configurações e valida
+  de acordo com as regras estabelecidas
+  Caso algum dos valores não obedeça aos parâmetro a função retorna -1.
+  *************************************/
+  function validarConfiguracao(nDias,nTurnos,nOperadores,nLegendas,nDiurna,nNoturna,nTrocas,nCargaMinima){
+
+    var n_dias        = validarInputConfiguracao(nDias,"int",28,31,"número de dias");
+    /*var n_turnos      = validarInputConfiguracao(nTurnos,"int",3,3,"número de turnos");*/
+    var n_turnos      = 1;
+    var op_turnos     = validarInputConfiguracao(nOperadores,"int",2,20,"número de operadores");
+    var digit_legenda = validarInputConfiguracao(nLegendas,"int",1,3,"dígitos das legendas");
+    var carga_diurna  = validarInputConfiguracao(nDiurna,"float",0,24,"carga horária diurna");
+    var carga_noturna = validarInputConfiguracao(nNoturna,"float",0,24,"carga horária noturna");
+    var n_trocas      = validarInputConfiguracao(nTrocas,"int",1,99,"quantidade trocas");
+    var carga_min     = validarInputConfiguracao(nCargaMinima,"float",100,170,"carga horária mínima");
+
+    if (n_dias === 1 && n_turnos === 1 && op_turnos === 1 && digit_legenda === 1 && carga_diurna === 1 && 
+        carga_noturna === 1 && n_trocas === 1 && carga_min === 1) {
+
+      return 1;
+
+    }
+    else{
+      return -1;
+    }
+
+  }
+
+  /*************************************
+  Essa função recebe o array tabela dias e verifica se os operadores inseridos
+  obedecem as regras definidas nas ICAS.
+  A função também pode verificar se a troca inserida no formulário não gera conflitos
+  com a escala proposta. Pra isso é necessário passar o argumento 'trocas' como true
+  *************************************/
+  function validarInputOperadores(arrayInputTabelaDias,arrayOperadores,n_dias,n_turnos,n_operadores,troca){
+
+    /*************************************
+    O arrayTabelaDias é acessado da forma:
+    arrayTabelaDias[i][j][k]
+
+    Onde i = número do dia (1->configuracao.numeroDias)
+         j = número do turno (1->configuracao.numeroTurnos)
+         k = posição do operador (1->configuracao.numeroOperadoresPorTurno)
+    *************************************/
+
+    /*Esse for checa se todos os usuários inseridos existem*/
+    for (var i = 1; i <= n_dias; i++) {
+      for (var j = 1; j <= n_turnos; j++) {
+        for (var k = 1; k <= n_operadores; k++) {
+
+          var legendaTestada  = arrayInputTabelaDias[i][j][k];
+          var operadorExiste  = arrayOperadores.indexOf(legendaTestada);
+
+          if (operadorExiste === -1){
+
+            if (legendaTestada === ""){
+              continue;
+            }
+            else{
+              alert("Você inseriu um usuário não cadastrado no dia " + i);
+              $( "#linhaTurno" + i + j ).addClass( "danger" );
+              return -1;
+            }
+
+          }
+
+        }
+      }
+    }
+
+    /*Esse for checa se um operador foi inserido duas vezes no mesmo turno*/
+    for (var i = 1; i <= n_dias; i++) {
+      for (var j = 1; j <= n_turnos; j++) {
+        for (var k = 1; k <= n_operadores; k++) {
+
+          var legendaTestada = arrayInputTabelaDias[i][j][k];
+
+          if (legendaTestada === ""){
+            continue;
+          }
+          else{
+
+            for (var l = k + 1; l <= n_operadores; l++) {
+
+              var outrasLegendas = arrayInputTabelaDias[i][j][l];
+
+              if (outrasLegendas === legendaTestada){
+                if (troca){
+
+                  alert("A troca não pode ser efetuada devido à um choque de turnos");
+                  return -1;
+
+                }
+                else{
+
+                  alert("Você inseriu a legenda " + legendaTestada + " mais de uma vez no dia " + i);
+                  $( "#linhaTurno" + i + j ).addClass( "danger" );
+                  return -1;
+
+                }
+          
+              }
+
+            }
+
+          }
+
+        }
+      }
+    }
+
+    /*Esse for checa se um Usuário foi inserido em turnos adjacentes*/
+    for (var i = 1; i <= n_dias; i++) {
+      for (var j = 1; j <= n_turnos; j++) {
+        for (var k = 1; k <= n_operadores; k++) {
+
+          var legendaTestada = arrayInputTabelaDias[i][j][k];
+
+          if (legendaTestada === ""){
+            continue;
+          }
+          else{
+
+            for (var l = 1; l <= n_operadores; l++) {
+
+              var turnoAdjacente = j+1;
+
+              if (turnoAdjacente === 4){
+
+                var diaAdjacente = i + 1;
+
+                var outrasLegendas = arrayInputTabelaDias[diaAdjacente][1][l];
+
+                if (outrasLegendas === legendaTestada){
+                  if (troca){
+
+                    alert("A troca não pode ser efetuada devido à um choque de turnos");
+                    return -1;
+
+                  }
+                  else{
+
+                    alert("Você inseriu a legenda " + legendaTestada + " em turnos ajacentes");
+                    $( "#linhaTurno" + i + j ).addClass( "danger" );
+                    $( "#linhaTurno" + diaAdjacente + 1 ).addClass( "danger" );
+                    return -1;
+
+                  }
+          
+                }
+
+              }
+              else{
+
+                var outrasLegendas = arrayInputTabelaDias[i][turnoAdjacente][l];
+
+                if (outrasLegendas === legendaTestada){
+                  if (troca){
+
+                    alert("A troca não pode ser efetuada devido à um choque de turnos")
+
+                  }
+                  else{
+
+                    alert("Você inseriu a legenda " + legendaTestada + " em turnos ajacentes");
+                    $( "#linhaTurno" + i + j ).addClass( "danger" );
+                    $( "#linhaTurno" + i + turnoAdjacente ).addClass( "danger" );
+                    return -1;
+
+                  }
+                  
+                }
+
+              }
+
+            }
+
+          }
+
+        }
+      }
     }
 
     return 1;
@@ -312,6 +509,92 @@ $( document ).ready(function() {
   }
 
   /*************************************
+  Essa função recebe os parâmetros setados no formulário de trocas e
+  verifica se a troca é possível de ser realizada. Opcionalmente a função também
+  altera o arrayTabelaDias e os inputs dos usuários.
+  Caso o operador proposto ou proponente não seja encontrado no turno indicado
+  a função é cancelada e a troca é registrada de qualquer forma, nesse caso
+  não alteração do array salvo ou dos inputs de usuário.
+  *************************************/
+  function executarTroca(arrayTabelaDiasSalvo,proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,n_operadores,verificar){
+
+    var posicaoProponenteNoTurno;
+    var posicaoPropostoNoTurno;
+    var arrayParaTestarTroca  = JSON.parse(JSON.stringify(arrayTabelaDiasSalvo));
+    var trocaPossivel         = -1;
+    var achouUsuario          = false
+
+    if (turnoProponente === "M"){ turnoProponente = 1;}
+    if (turnoProponente === "T"){ turnoProponente = 2;}
+    if (turnoProponente === "N"){ turnoProponente = 3;}
+
+    if (turnoProposto === "M"){ turnoProposto = 1;}
+    if (turnoProposto === "T"){ turnoProposto = 2;}
+    if (turnoProposto === "N"){ turnoProposto = 3;}
+
+    diaProponente = parseInt(diaProponente, 10);
+    diaProposto   = parseInt(diaProposto, 10);
+
+    for (var i = 1; i <= n_operadores; i++) {
+
+      if (arrayParaTestarTroca[diaProponente][turnoProponente][i] === proponente){
+        posicaoProponenteNoTurno = i;
+        achouUsuario = true;
+      }
+      if (i === n_operadores && !achouUsuario){
+        if (verificar){
+          alert("Proponente não encontrado no turno informado");
+          return 1;
+        }        
+      }
+    }
+
+    achouUsuario = false;
+
+    for (var j = 1; j <= n_operadores; j++) {
+
+      if (arrayParaTestarTroca[diaProposto][turnoProposto][j] === proposto){
+        posicaoPropostoNoTurno = j;
+        achouUsuario = true;
+      }
+      if (j === n_operadores && !achouUsuario){
+        if (verificar){
+          alert("Proposto não encontrado no turno informado");
+          return 1;
+        }        
+      }
+    }
+
+    arrayParaTestarTroca[diaProponente][turnoProponente][posicaoProponenteNoTurno]  = proposto;
+    arrayParaTestarTroca[diaProposto][turnoProposto][posicaoPropostoNoTurno]        = proponente;
+
+    if (verificar){
+
+      trocaPossivel = validarInputOperadores(arrayParaTestarTroca,legendasOperadores,
+                                            configuracao.numeroDias,
+                                            configuracao.numeroTurnos,
+                                            configuracao.numeroOperadoresPorTurno,
+                                            true);
+
+    }
+    if (!verificar){
+
+      arrayTabelaDias = JSON.parse(JSON.stringify(arrayParaTestarTroca));
+      $( "#" + diaProponente + "-" + turnoProponente + "-" + posicaoProponenteNoTurno ).val(proposto);
+      $( "#" + diaProposto + "-" + turnoProposto + "-" + posicaoPropostoNoTurno ).val(proponente);
+
+      trocaPossivel = 1;
+
+
+    }
+
+    
+
+    return trocaPossivel;
+
+  }
+
+  /*************************************
   Essa função recebe o índice do registro no arrayRegistroTrocas e elimina
   o referido registro do array permanentemente.
   *************************************/
@@ -331,7 +614,7 @@ $( document ).ready(function() {
        j = número do turno (1->configuracao.numeroTurnos)
        k = posição do operador (1->configuracao.numeroOperadoresPorTurno)
   *************************************/
-  function criarArrayTabelaDias(arrayOperadores, n_dias, n_turnos, n_operadores){
+  function criarArrayTabelaDias(n_dias, n_turnos, n_operadores){
 
     for (var i = 1; i <= n_dias; i++) {
       arrayTabelaDias[i] = [];
@@ -339,22 +622,7 @@ $( document ).ready(function() {
         arrayTabelaDias[i][j] = [];
         for (var k = 1; k <= n_operadores; k++) {
 
-          valorCelula = $( "#" + i + "-" + j + "-" + k ).val();
-
-          indiceValorCelula = arrayOperadores.indexOf(valorCelula);
-
-          if (indiceValorCelula == -1){
-            if (valorCelula === ""){
-              continue;
-            }
-            else {
-              alert("Você inseriu um usuário não cadastrado no dia " + i);
-              $( "#linhaTurno" + i + j ).addClass( "danger" );
-              return -1;
-            }
-          }
-
-          arrayTabelaDias[i][j][k] = valorCelula;
+          arrayTabelaDias[i][j][k] = $( "#" + i + "-" + j + "-" + k ).val();
 
         }
       }
@@ -682,39 +950,24 @@ $( document ).ready(function() {
     var legendas        = $( '#inputLegendaOperadores' ).val();
     legendasOperadores  = JSON.parse("[" + legendas + "]");
 
-    var numeroDias                  = $( '#inputNumeroDias' ).val();
-    var numeroTurnos                = $( '#inputNumeroTurnos' ).val();
-    var numeroOperadoresPorTurno    = $( '#inputNumeroOperadoresPorTurno' ).val();
-    var digitosLegendas             = $( '#inputDigitosLegendas' ).val();
-    var cargaHorariaDiurna          = $( '#inputCargaHorariaDiurna' ).val();
-    var cargaHorariaNoturna         = $( '#inputCargaHorariaNoturna' ).val();
-    var quantidadeTrocas            = $( '#inputNumeroTrocas' ).val();
-    var cargaHorariaMinima          = $( '#inputCargaHorariaMinima' ).val();
+    var numeroDias                  = parseFloat($( '#inputNumeroDias' ).val());
+    /*****************************************************************************
+    /**  As tabelas não estão adaptadas pra um número de turnos maior que 3.   **/
+    /**  Até lá impedimos o usário de inserir essa configuração.               **/
+    /****************************************************************************/
+    /*var numeroTurnos                = parseFloat($( '#inputNumeroTurnos' ).val());*/
+    var numeroTurnos                = 3;
+    var numeroOperadoresPorTurno    = parseFloat($( '#inputNumeroOperadoresPorTurno' ).val());
+    var digitosLegendas             = parseFloat($( '#inputDigitosLegendas' ).val());
+    var cargaHorariaDiurna          = parseFloat($( '#inputCargaHorariaDiurna' ).val());
+    var cargaHorariaNoturna         = parseFloat($( '#inputCargaHorariaNoturna' ).val());
+    var quantidadeTrocas            = parseFloat($( '#inputNumeroTrocas' ).val());
+    var cargaHorariaMinima          = parseFloat($( '#inputCargaHorariaMinima' ).val());
     var removerEtapasComuns         = $( '#inputRemoverEtapasComuns' ).val();
 
-    numeroDias                = parseInt(numeroDias, 10);
-    numeroTurnos              = parseInt(numeroTurnos, 10);
-    numeroOperadoresPorTurno  = parseInt(numeroOperadoresPorTurno, 10);
-    digitosLegendas           = parseInt(digitosLegendas, 10);
-    cargaHorariaDiurna        = parseFloat(cargaHorariaDiurna);
-    cargaHorariaNoturna       = parseFloat(cargaHorariaNoturna);
-    quantidadeTrocas          = parseInt(quantidadeTrocas, 10);
-    cargaHorariaMinima        = parseFloat(cargaHorariaMinima);
-
-    var n_dias        = validarInputConfiguracao(numeroDias,"int",28,31,"número de dias");
-    var n_turnos      = validarInputConfiguracao(numeroTurnos,"int",3,3,"número de turnos");
-    var op_turnos     = validarInputConfiguracao(numeroOperadoresPorTurno,"int",2,20,"número de operadores");
-    var digit_legenda = validarInputConfiguracao(digitosLegendas,"int",1,3,"dígitos das legendas");
-    var carga_diurna  = validarInputConfiguracao(cargaHorariaDiurna,"float",0,24,"carga horária diurna");
-    var carga_noturna = validarInputConfiguracao(cargaHorariaNoturna,"float",0,24,"carga horária noturna");
-    var n_trocas      = validarInputConfiguracao(quantidadeTrocas,"int",1,99,"quantidade trocas");
-    var carga_min     = validarInputConfiguracao(cargaHorariaMinima,"float",100,170,"carga horária mínima");
-
-    if (n_dias === 1 && n_turnos === 1 && op_turnos === 1 && digit_legenda === 1 && carga_diurna === 1 && carga_noturna === 1 && n_trocas === 1 && carga_min === 1) {
-
-      configuracaoCorreta = 1;
-
-    }
+    configuracaoCorreta = validarConfiguracao(numeroDias,numeroTurnos,numeroOperadoresPorTurno,
+                                              digitosLegendas,cargaHorariaDiurna,cargaHorariaNoturna,
+                                              quantidadeTrocas,cargaHorariaMinima);    
 
     if (configuracaoCorreta === 1) {
 
@@ -781,7 +1034,9 @@ $( document ).ready(function() {
 
   $( '#botaoRegistrarTroca' ).on( "click", function(){
 
-    formularioCorreto = -1;
+    var formularioCorreto     = -1;
+    var trocaPossivel         = -1;
+    var arrayTabelaDiasSalvo  = [];
 
     proponente      = $( '#inputProponente' ).val();
     proposto        = $( '#inputProposto' ).val();
@@ -790,11 +1045,25 @@ $( document ).ready(function() {
     turnoProponente = $( '#inputTurnoProponente' ).val();
     turnoProposto   = $( '#inputTurnoProposto' ).val();
 
-    formularioCorreto = validarFormularioTroca(proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto,arrayRegistroTrocas);
+    criarArrayTabelaDias(configuracao.numeroDias,
+                          configuracao.numeroTurnos,
+                          configuracao.numeroOperadoresPorTurno);
 
-    if (formularioCorreto === 1) {
+    arrayTabelaDiasSalvo = JSON.parse(JSON.stringify(arrayTabelaDias));
 
-      registrarTroca(arrayRegistroTrocas,proponente,proposto,diaProponente,diaProposto,turnoProponente,turnoProposto);
+    formularioCorreto = validarFormularioTroca(proponente,proposto,diaProponente,diaProposto,
+                                                turnoProponente,turnoProposto,arrayRegistroTrocas);
+
+    trocaPossivel = executarTroca(arrayTabelaDiasSalvo,proponente,proposto,diaProponente,diaProposto,
+                                    turnoProponente,turnoProposto,configuracao.numeroOperadoresPorTurno,true);
+
+    if (formularioCorreto === 1 && trocaPossivel === 1) {
+
+      registrarTroca(arrayRegistroTrocas,proponente,proposto,diaProponente,
+                      diaProposto,turnoProponente,turnoProposto);
+
+      executarTroca(arrayTabelaDiasSalvo,proponente,proposto,diaProponente,diaProposto,
+                    turnoProponente,turnoProposto,configuracao.numeroOperadoresPorTurno,false);
 
       alert("Troca registrada");
 
@@ -815,10 +1084,14 @@ $( document ).ready(function() {
 
     var todosUsuariosCorretos = -1;
 
-    var todosUsuariosCorretos = criarArrayTabelaDias(legendasOperadores,
-                          configuracao.numeroDias,
+    criarArrayTabelaDias(configuracao.numeroDias,
                           configuracao.numeroTurnos,
                           configuracao.numeroOperadoresPorTurno);
+
+    todosUsuariosCorretos = validarInputOperadores(arrayTabelaDias,legendasOperadores,
+                                                    configuracao.numeroDias,
+                                                    configuracao.numeroTurnos,
+                                                    configuracao.numeroOperadoresPorTurno,false);
 
     if (todosUsuariosCorretos === 1) {
 
@@ -891,10 +1164,14 @@ $( document ).ready(function() {
 
     var todosUsuariosCorretos = -1;
 
-    todosUsuariosCorretos = criarArrayTabelaDias(legendasOperadores,
-                          configuracao.numeroDias,
+    criarArrayTabelaDias(configuracao.numeroDias,
                           configuracao.numeroTurnos,
                           configuracao.numeroOperadoresPorTurno);
+
+    todosUsuariosCorretos = validarInputOperadores(arrayTabelaDias,legendasOperadores,
+                                                    configuracao.numeroDias,
+                                                    configuracao.numeroTurnos,
+                                                    configuracao.numeroOperadoresPorTurno);
 
     if (todosUsuariosCorretos === 1) {
 
